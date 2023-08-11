@@ -15,7 +15,7 @@ export PYTHONPATH=$(pwd)
 ## Run the code
 
 ```bash
-uvicorn src.main:app --reload
+uvicorn src.app:app --reload
 ```
 
 ## Run the tests
