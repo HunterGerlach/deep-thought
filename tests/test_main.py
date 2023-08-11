@@ -3,7 +3,7 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 import logging
 
-from src.main import app, call_openai, get_bot_response
+from src.main import app, call_language_model, get_bot_response
 
 class TestMain(unittest.TestCase):
 
@@ -12,17 +12,28 @@ class TestMain(unittest.TestCase):
         logging.getLogger().setLevel(logging.WARNING)
 
     @patch('src.main.LLMChain')
+    @patch('src.main.VertexAI')
+    @patch('src.main.PromptTemplate')
+    def test_call_vertexai(self, MockPromptTemplate, MockVertexAI, MockLLMChain):
+        mock_chain = MockLLMChain.return_value
+        mock_chain.run.return_value = 'Test response'
+        with patch('src.main.MODEL_PROVIDER', 'vertex'):
+            response = call_language_model('test_input')
+        self.assertEqual(response, 'Test response')
+
+    @patch('src.main.LLMChain')
     @patch('src.main.OpenAI')
     @patch('src.main.PromptTemplate')
     def test_call_openai(self, MockPromptTemplate, MockOpenAI, MockLLMChain):
         mock_chain = MockLLMChain.return_value
         mock_chain.run.return_value = 'Test response'
-        response = call_openai('test_input')
+        with patch('src.main.MODEL_PROVIDER', 'openai'):
+            response = call_language_model('test_input')
         self.assertEqual(response, 'Test response')
 
-    @patch('src.main.call_openai')
-    def test_get_bot_response_hello(self, mock_call_openai):
-        mock_call_openai.return_value = 'Hi there!'
+    @patch('src.main.call_language_model')
+    def test_get_bot_response_hello(self, mock_call_language_model):
+        mock_call_language_model.return_value = 'Hi there!'
         response = get_bot_response('hello')
         self.assertEqual(response, 'Hi there!')
 
@@ -30,11 +41,11 @@ class TestMain(unittest.TestCase):
         response = get_bot_response('what is your name?')
         self.assertEqual(response, 'My name is Chat Bot!')
 
-    @patch('src.main.call_openai')
-    def test_get_bot_response_other(self, mock_call_openai):
-        mock_call_openai.return_value = 'OpenAI response'
+    @patch('src.main.call_language_model')
+    def test_get_bot_response_other(self, mock_call_language_model):
+        mock_call_language_model.return_value = 'Language model response'
         response = get_bot_response('other_input')
-        self.assertEqual(response, 'OpenAI response')
+        self.assertEqual(response, 'Language model response')
 
     def test_handle_request_get(self):
         response = self.app.get('/')
@@ -53,14 +64,14 @@ class TestMain(unittest.TestCase):
         response = self.app.post('/get_embedding_sources', json={'query': 'test_query', 'num_results': 5})
         self.assertEqual(response.json(), {'embedding_source': 'Test response'})
 
-    @patch('src.main.call_openai')
+    @patch('src.main.call_language_model')
     @patch('src.main.EmbeddingSource')
-    def test_synthesize_response(self, MockEmbeddingSource, mock_call_openai):
+    def test_synthesize_response(self, MockEmbeddingSource, mock_call_language_model):
         mock_get_source = MockEmbeddingSource.return_value.get_source
         mock_get_source.return_value = [{'source': 'test_source', 'content': 'test_content'}]
-        mock_call_openai.return_value = 'OpenAI response'
+        mock_call_language_model.return_value = 'Language model response'
         response = self.app.post('/synthesize_response', json={'query': 'test_query', 'num_results': 5})
-        self.assertEqual(response.json(), {'bot_response': 'OpenAI response\n\nPossibly Related Sources:\n<a href="#">test_source</a>'})
+        self.assertEqual(response.json(), {'bot_response': 'Language model response\n\nPossibly Related Sources:\n<a href="#">test_source</a>'})
 
 if __name__ == "__main__":
     unittest.main()

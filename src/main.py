@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import requests
 
 from langchain.llms import OpenAI
+from langchain.llms import VertexAI
 from langchain.callbacks import get_openai_callback
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -17,6 +18,27 @@ logger = setup_logger()
 
 class HandleRequestPostBody(BaseModel):
     user_input: str
+
+def call_language_model(input_val):
+    if MODEL_PROVIDER == 'openai':
+        result = call_openai(input_val)
+    elif MODEL_PROVIDER == 'vertex':
+        result = call_vertexai(input_val)
+    else:
+        raise ValueError(f"Invalid model name: {MODEL_PROVIDER}")
+    return result
+    
+def call_vertexai(input_val):
+    llm = VertexAI(model_name=VERTEX_MODEL_NAME, temperature=0.9)
+    prompt = PromptTemplate(
+        input_variables=["input_val"],
+        template="Tell me an interesting fact about {input_val}",
+    )
+    logger.debug(f"template: {prompt.template}")
+    chain = LLMChain(llm=llm, prompt=prompt)
+    result = chain.run(input_val)
+    return result
+    
 
 def call_openai(input_val):
     llm = OpenAI(model_name=OPENAI_MODEL_NAME, temperature=0.9)
@@ -59,7 +81,7 @@ def get_bot_response(user_input):
     elif user_input == 'what is your name?':
         return 'My name is Chat Bot!'
     else:
-        return call_openai(user_input)
+        return call_language_model(user_input)
 
     
 app = FastAPI()
@@ -127,7 +149,7 @@ def synthesize_response(
     logger.info(f"Query: {query}")
     logger.info(f"Prompt: {prompt}")
 
-    bot_response = call_openai(prompt)
+    bot_response = call_language_model(prompt)
 
     sources_used = [f"<a href=\"{result.get('source_link', '#')}\">{result['source']}</a>" for result in embedding_results]
     bot_response += "\n\nPossibly Related Sources:\n" + '\n'.join(sources_used)
@@ -138,7 +160,6 @@ def synthesize_response(
 def handle_exception(request, exc):
     logger.error(f"An error occurred: {exc}")
     return JSONResponse(status_code=500, content={"message": "An internal error occurred"})
-
 
 if __name__ == '__main__':
     import uvicorn

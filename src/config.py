@@ -3,6 +3,10 @@ import os
 
 load_dotenv()
 
+MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", "vertex")
+
+VERTEX_MODEL_NAME = os.getenv("VERTEX_MODEL_NAME", "text-bison")
+
 API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_MODEL_NAME = os.getenv("OPENAI_MODEL_NAME", "text-davinci-002")
 OPENAI_MODEL_PRICE = os.getenv("OPENAI_MODEL_PRICE", "0.000006")
