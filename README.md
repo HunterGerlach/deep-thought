@@ -27,3 +27,19 @@ python -m unittest discover
 ## API Details
 
 Information about the API can be found in the [API documentation](API.md).
+
+## Deployment to OpenShift
+
+Add the following to the `spec` section of the `Deployment` resource:
+
+```yaml
+spec:
+    template:
+        spec:
+            containers:
+                env:
+                    - name: APP_FILE
+                    value: src/app.py
+                    - name: PYTHONPATH
+                    value: /
+```

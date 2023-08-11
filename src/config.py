@@ -14,3 +14,5 @@ TOKENIZERS_PARALLELISM = os.getenv("TOKENIZERS_PARALLELISM", "false")
 
 SPEND_LOG_FILE = os.getenv("SPEND_LOG_FILE", "spend.log")
 LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG")
+
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")

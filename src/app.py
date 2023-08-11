@@ -85,7 +85,7 @@ def get_bot_response(user_input):
 
     
 app = FastAPI()
-origins = ["http://localhost:3000"]
+origins = [origin.strip() for origin in CORS_ORIGINS.split(",")]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
