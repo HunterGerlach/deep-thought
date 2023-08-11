@@ -1,3 +1,8 @@
+# Deep Thought-specific items
+.venv_deep-thought/
+debug.log
+spend.log
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
