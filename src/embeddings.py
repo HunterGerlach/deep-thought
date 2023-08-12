@@ -4,13 +4,15 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from typing import List, Union
 from dotenv import load_dotenv
 
+from src.config import *
+
 load_dotenv()
 
 class EmbeddingSource:
     def __init__(self):
-        self.connection_string = os.getenv('CONNECTION_STRING', "postgresql://default_connection_string")
-        self.collection_name = os.getenv('COLLECTION_NAME', "default_collection")
-        self.model_name = os.getenv('MODEL_NAME', "all-MiniLM-L6-v2")
+        self.connection_string = CONNECTION_STRING
+        self.collection_name = COLLECTION_NAME
+        self.model_name = EMBEDDING_MODEL_NAME
         self.embeddings = HuggingFaceEmbeddings(model_name=self.model_name)
 
     def get_source(self, query: Union[str, List[str]], num_results: int) -> Union[dict, List[dict]]:
