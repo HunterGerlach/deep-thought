@@ -18,5 +18,5 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG")
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
 
 CONNECTION_STRING = os.getenv("CONNECTION_STRING", "postgresql://default_connection_string")
-COLLECTION_NAME = os.getenv("CONNECTION_NAME", "default_connection_name")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME", "default_connection_name")
 EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL_NAME", "all-MiniLM-L6-v2")

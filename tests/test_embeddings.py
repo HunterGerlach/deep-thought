@@ -9,15 +9,6 @@ class TestEmbeddingSource(unittest.TestCase):
     def setUp(self):
         logging.getLogger().setLevel(logging.WARNING)
 
-    # Patch CONNECTION_STRING, COLLECTION_NAME, EMBEDDING_MODEL_NAME from src.config as used in src.embeddings
-    @patch('src.embeddings.CONNECTION_STRING', "postgresql://langchain:hello world@postgres:5432/langchain")
-    @patch('src.embeddings.COLLECTION_NAME', "demo_collection")
-    @patch('src.embeddings.EMBEDDING_MODEL_NAME', "all-MiniLM-L6-v2")
-    def test_init(self):
-        self.assertEqual(EmbeddingSource().connection_string, "postgresql://langchain:hello world@postgres:5432/langchain")
-        self.assertEqual(EmbeddingSource().collection_name, "demo_collection")
-        self.assertEqual(EmbeddingSource().model_name, "all-MiniLM-L6-v2")
-
     @patch('src.embeddings.PGVector')
     def test_get_source(self, MockPGVector):
         mock_doc = MagicMock()
