@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -47,11 +47,15 @@ def call_vertexai(input_val, prompt):
 def call_openai(input_val, prompt):
     openai_model_name = config.get("OPENAI_MODEL_NAME", "gpt-3.5-turbo")
     logger.debug(f"Using OpenAI model: {openai_model_name}")
-    llm = OpenAI(model_name=openai_model_name, temperature=0.9)
-    chain = LLMChain(llm=llm, prompt=prompt)
-    with get_openai_callback() as cb:
-        result = chain.run(input_val)
-    token_cost(cb.total_tokens)
+    if not spend_limit_exceeded():
+        llm = OpenAI(model_name=openai_model_name, temperature=0.9)
+        chain = LLMChain(llm=llm, prompt=prompt)
+        with get_openai_callback() as cb:
+            result = chain.run(input_val)
+        token_cost(cb.total_tokens)
+    else:
+        raise HTTPException(status_code=402, detail="Spending limit exceeded")
+    
     return result
 
 def token_cost(total_tokens):
@@ -77,6 +81,21 @@ def calculate_total_spent(spend_log_file):
         total_spent = sum(float(line.strip()) for line in file)
     logger.debug(f"Total Spent: ${total_spent:.5f}")
     return total_spent
+
+def spend_limit_exceeded():
+    spend_log_file = config.get("SPEND_LOG_FILE", "spend.log")
+    spend_limit = config.get("SPEND_LIMIT", "0.001")
+    total_spent = calculate_total_spent(spend_log_file)
+    if total_spent > float(spend_limit):
+        logger.error(f"SPEND_LIMIT (${float(spend_limit):.5f}) exceeded: ${total_spent:.5f}")
+        return True
+    else:
+        # use SPENDING_WARNING_PCT to determine when to send warning
+        spending_warning_pct = config.get("SPENDING_WARNING_PCT", "0.8")
+        if total_spent > float(spend_limit) * float(spending_warning_pct) and total_spent <= float(spend_limit):
+            logger.warning(f"SPEND_LIMIT warning")
+        logger.debug(f"SPEND_LIMIT (${float(spend_limit):.5f}) not exceeded: ${total_spent:.5f}")
+        return False
 
 def get_bot_response(user_input):
     logger.info(user_input)

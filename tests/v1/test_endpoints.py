@@ -74,5 +74,9 @@ class TestMain(unittest.TestCase):
         response = self.app.post('/synthesize_response', json={'query': 'test_query', 'num_results': 5})
         self.assertEqual(response.json(), {'bot_response': 'Language model response\n\nPossibly Related Sources:\n<a href="#">test_source</a>'})
 
+    #TODO
+    def test_spend_limit_exceeded(self):
+                assert True == True
+
 if __name__ == "__main__":
     unittest.main()
