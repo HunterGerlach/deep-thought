@@ -1,7 +1,11 @@
 import logging
 from termcolor import colored
 
-from src.config import LOG_LEVEL
+from src.config import Config
+
+config = Config()
+
+log_level = config.get("LOG_LEVEL", "INFO")
 
 class ColoredFormatter(logging.Formatter):
     COLORS = {
@@ -19,7 +23,7 @@ class ColoredFormatter(logging.Formatter):
 
 def setup_logger():
     logging.basicConfig(
-        level=getattr(logging, LOG_LEVEL),
+        level=getattr(logging, log_level),
         format="%(levelname)s: %(asctime)s - %(message)s",
         handlers=[
             logging.FileHandler("debug.log"),

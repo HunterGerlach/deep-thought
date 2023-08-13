@@ -17,18 +17,19 @@ class TestMain(unittest.TestCase):
     def test_call_vertexai(self, MockPromptTemplate, MockVertexAI, MockLLMChain):
         mock_chain = MockLLMChain.return_value
         mock_chain.run.return_value = 'Test response'
-        with patch('src.app.MODEL_PROVIDER', 'vertex'):
+        with patch('src.app.config.get', return_value='vertex'):
             response = call_language_model('test_input')
         self.assertEqual(response, 'Test response')
-
+        
     @patch('src.app.LLMChain')
     @patch('src.app.OpenAI')
     @patch('src.app.PromptTemplate')
     def test_call_openai(self, MockPromptTemplate, MockOpenAI, MockLLMChain):
         mock_chain = MockLLMChain.return_value
         mock_chain.run.return_value = 'Test response'
-        with patch('src.app.MODEL_PROVIDER', 'openai'):
-            response = call_language_model('test_input')
+        with patch('src.app.config.get', return_value='openai'):
+            with patch('src.app.token_cost', return_value=1):
+                response = call_language_model('test_input')
         self.assertEqual(response, 'Test response')
 
     @patch('src.app.call_language_model')

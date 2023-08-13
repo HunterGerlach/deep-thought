@@ -10,69 +10,73 @@ from langchain.callbacks import get_openai_callback
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
-from src.config import *
+from src.config import Config
 from src.embeddings import EmbeddingSource
 from src.logging_setup import setup_logger
 
+config = Config()
 logger = setup_logger()
 
 class HandleRequestPostBody(BaseModel):
     user_input: str
 
 def call_language_model(input_val):
-    if MODEL_PROVIDER == 'openai':
-        result = call_openai(input_val)
-    elif MODEL_PROVIDER == 'vertex':
-        result = call_vertexai(input_val)
-    else:
-        raise ValueError(f"Invalid model name: {MODEL_PROVIDER}")
-    return result
-    
-def call_vertexai(input_val):
-    llm = VertexAI(model_name=VERTEX_MODEL_NAME, temperature=0.9)
+    model_provider = config.get("MODEL_PROVIDER", "UNDEFINED")
+    logger.debug(f"Using model provider: {model_provider}")
     prompt = PromptTemplate(
         input_variables=["input_val"],
         template="Tell me an interesting fact about {input_val}",
     )
-    logger.debug(f"template: {prompt.template}")
+    if model_provider == 'openai':
+        result = call_openai(input_val, prompt)
+    elif model_provider == 'vertex':
+        result = call_vertexai(input_val, prompt)
+    else:
+        raise ValueError(f"Invalid model name: {model_provider}")
+    return result
+    
+def call_vertexai(input_val, prompt):
+    vertex_model_name = config.get("VERTEX_MODEL_NAME", "text-bison")
+    logger.debug(f"Using Vertex AI model: {vertex_model_name}")
+    llm = VertexAI(model_name=vertex_model_name, temperature=0.9)
     chain = LLMChain(llm=llm, prompt=prompt)
     result = chain.run(input_val)
     return result
     
 
-def call_openai(input_val):
-    llm = OpenAI(model_name=OPENAI_MODEL_NAME, temperature=0.9)
-    prompt = PromptTemplate(
-        input_variables=["input_val"],
-        template="Tell me an interesting fact about {input_val}",
-    )
+def call_openai(input_val, prompt):
+    openai_model_name = config.get("OPENAI_MODEL_NAME", "gpt-3.5-turbo")
+    logger.debug(f"Using OpenAI model: {openai_model_name}")
+    llm = OpenAI(model_name=openai_model_name, temperature=0.9)
     chain = LLMChain(llm=llm, prompt=prompt)
     with get_openai_callback() as cb:
         result = chain.run(input_val)
-    token_cost_of_run(cb.total_tokens)
-    calculate_total_spend()
+    token_cost(cb.total_tokens)
     return result
 
-def token_cost_of_run(total_tokens):
-    total_cost = total_tokens * float(OPENAI_MODEL_PRICE)
+def token_cost(total_tokens):
+    spend_log_file = config.get("SPEND_LOG_FILE", "spend.log")
+    openai_model_price = config.get("OPENAI_MODEL_PRICE", "0.000006")
+    total_cost = total_tokens * float(openai_model_price)
     logger.debug(f"Total tokens: {total_tokens}")
     logger.debug(f"Total cost: ${total_cost:.5f}")
 
-    with open(SPEND_LOG_FILE, "a") as file:
+    with open(spend_log_file, "a") as file:
         file.write(f"{total_cost:.5f}\n")
-        
+    total_spent = calculate_total_spent(spend_log_file)
     return JSONResponse(
         {
             "total_tokens": total_tokens,
             "total_cost": f"${total_tokens:.5f}",
+            "total_spent": f"${total_spent:.5f}",
         }
     )
     
-def calculate_total_spend():
-    with open(SPEND_LOG_FILE, "r") as file:
-        total_spend = sum(float(line.strip()) for line in file)
-    logger.debug(f"Total Spend: ${total_spend:.5f}")
-    return total_spend
+def calculate_total_spent(spend_log_file):
+    with open(spend_log_file, "r") as file:
+        total_spent = sum(float(line.strip()) for line in file)
+    logger.debug(f"Total Spent: ${total_spent:.5f}")
+    return total_spent
 
 def get_bot_response(user_input):
     logger.info(user_input)
@@ -85,7 +89,8 @@ def get_bot_response(user_input):
 
     
 app = FastAPI()
-origins = [origin.strip() for origin in CORS_ORIGINS.split(",")]
+cors_origins = config.get("CORS_ORIGINS", "UNDEFINED")
+origins = [origin.strip() for origin in cors_origins.split(",")]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
