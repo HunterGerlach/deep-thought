@@ -87,8 +87,9 @@ def get_bot_response(user_input):
     else:
         return call_language_model(user_input)
 
-    
-app = FastAPI()
+DISABLE_SWAGGER = config.get("DISABLE_SWAGGER", "false").lower() == "true"
+
+app = FastAPI(docs_url=None if DISABLE_SWAGGER else "/docs")
 cors_origins = config.get("CORS_ORIGINS", "UNDEFINED")
 origins = [origin.strip() for origin in cors_origins.split(",")]
 app.add_middleware(
