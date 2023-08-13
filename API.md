@@ -65,3 +65,19 @@ With Postman:
 ```bash
 POST http://localhost:5000/ask
 ```
+
+## OpenAPI (Swagger) Specification
+
+The API is documented using OpenAPI. The OpenAPI UI can be accessed at `/docs`.
+
+The OpenAPI specification can be found at `/spec`.
+
+The OpenAPI spec is defined in `/spec/openapi.json' and is to be regarded as the source of truth for the API.
+Both API developers and consumers should refer to this file for the API definition. Developers should update this file
+prior to making changes to the API, keeping in mind that the API is versioned.
+
+### Versioning
+
+The API is versioned and endpoints will always be available under the version number (e.g. `/v1/`).
+
+This API follows [Semantic Versioning](https://semver.org/), but only the major version number is included in the URL. Minor and patch versions can be found in the OpenAPI spec.
