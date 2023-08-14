@@ -13,16 +13,14 @@ Description: Find sources for a given query
 With curl:
 
 ```bash
-curl    -X POST \
-        -H "Content-Type: application/json" \
-        -d '{"query": "What is the capital of France?", "sources": ["wikipedia", "freebase", "dbpedia"]}' http://localhost:5000/find_sources
+curl -X 'POST' 'http://127.0.0.1:8000/v1/get_embedding_sources' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
 ```
 
-With Postman:
+<!-- With Postman:
 
 ```bash
 POST http://localhost:5000/find_sources
-```
+``` -->
 
 ### LLM Fact
 
@@ -33,38 +31,32 @@ Description: Find the most likely fact for a given query
 With curl:
 
 ```bash
-curl    -X POST \
-        -H "Content-Type: application/json" \
-        -d '{"query": "What is the capital of France?", "sources": ["wikipedia", "freebase", "dbpedia"]}' \
-        http://localhost:5000/llm_fact
+curl -X 'POST' 'http://127.0.0.1:8000/v1/' -H 'Content-Type: application/json' -d '{"user_input": "whats for dinner"}'
 ```
 
-With Postman:
+<!-- With Postman:
 
 ```bash
 POST http://localhost:5000/llm_fact
-```
+``` -->
 
-### LLM Fact with context
+### Ask Endpoint
 
-Description: Find the most likely fact for a given query and context
+Description: Ask a question and get an answer with links to sources
 
 #### Hitting the endpoint
 
 With curl:
 
 ```bash
-curl    -X POST \
-        -H "Content-Type: application/json" \
-        -d '{"query": "What is the capital of France?", "sources": ["wikipedia", "freebase", "dbpedia"]}' \
-        http://localhost:5000/ask
+curl -X 'POST' 'http://127.0.0.1:8000/v1/synthesize_response' -H 'Content-Type: application/json' -d '{"query": "step by step instructions to install a new operator", "num_results": 1}'
 ```
 
-With Postman:
+<!-- With Postman:
 
 ```bash
-POST http://localhost:5000/ask
-```
+POST http://localhost:8000/v1/synthesize_response
+``` -->
 
 ## OpenAPI (Swagger) Specification
 
@@ -81,3 +73,37 @@ prior to making changes to the API, keeping in mind that the API is versioned.
 The API is versioned and endpoints will always be available under the version number (e.g. `/v1/`).
 
 This API follows [Semantic Versioning](https://semver.org/), but only the major version number is included in the URL. Minor and patch versions can be found in the OpenAPI spec.
+
+#### Testing Versioning
+
+To test versioning, you can hit two separate endpoints:
+
+```bash
+curl -X 'GET' 'http://127.0.0.1:8000/v1/items/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
+```
+
+Which should return:
+
+```json
+[
+  {
+    "name": "Foo"
+  }
+]
+```
+
+And then:
+
+```bash
+curl -X 'GET' 'http://127.0.0.1:8000/v2/items/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
+```
+
+Which should return:
+
+```json
+[
+  {
+    "name": "Bar"
+  }
+]
+```
