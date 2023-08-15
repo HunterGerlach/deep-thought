@@ -12,6 +12,9 @@ pip install -r requirements.txt
 export PYTHONPATH=$(pwd)
 ```
 
+Create .env.config, .env.secrets from .env.config.example, .env.secrets.example under /src. The MODEL_PROVIDER config variable can be changed as per requirement
+Create spend.log empty file under deep-thought
+
 ## Run the code
 
 ```bash
