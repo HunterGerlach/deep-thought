@@ -12,6 +12,14 @@ pip install -r requirements.txt
 export PYTHONPATH=$(pwd)
 ```
 
+Installs the following (along with dependencies):
+
+- httpx (for unit testing)
+- openai
+- pgvector
+- psycopg2-binary
+- sentence_transformers
+
 Create .env.config, .env.secrets from .env.config.example, .env.secrets.example under /src. The MODEL_PROVIDER config variable can be changed as per requirement
 Create spend.log empty file under deep-thought
 
