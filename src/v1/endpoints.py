@@ -6,6 +6,7 @@ from langchain.llms import OpenAI
 from langchain.llms import VertexAI
 from langchain.callbacks import get_openai_callback
 from langchain.chains import LLMChain
+from langchain.output_parsers import GuardrailsOutputParser
 from langchain.prompts import PromptTemplate
 
 from src.config import Config
@@ -19,13 +20,48 @@ router = APIRouter()
 
 class HandleRequestPostBody(BaseModel):
     user_input: str
+    
+rail_spec = """
+<rail version="0.1">
+
+<output>
+    <object name="patient_info">
+        <string name="gender" description="Patient's gender" />
+        <integer name="age" format="valid-range: 0 100" />
+        <string name="symptoms" description="Symptoms that the patient is currently experiencing" />
+    </object>
+</output>
+
+<prompt>
+
+Given the following doctor's notes about a patient, please extract a dictionary that contains the patient's information.
+
+{{doctors_notes}}
+
+@complete_json_suffix_v2
+</prompt>
+</rail>
+"""
 
 def call_language_model(input_val):
     model_provider = config.get("MODEL_PROVIDER", "UNDEFINED")
     logger.debug(f"Using model provider: {model_provider}")
+    output_parser = GuardrailsOutputParser.from_rail_string(rail_spec)
+    logger.warning(output_parser.guard.base_prompt)
+    prompt = PromptTemplate(
+        template=output_parser.guard.base_prompt,
+        input_variables=output_parser.guard.prompt.variable_names,
+    )
+    model = OpenAI(temperature=0)
+    doctors_notes = """
+    49 y/o Male with chronic macular rash to face & hair, worse in beard, eyebrows & nares.
+    Itchy, flaky, slightly scaly. Moderate response to OTC steroid cream
+    """
+    output = model(prompt.format_prompt(doctors_notes=doctors_notes).to_string())
+    logger.warning(output_parser.parse(output))
     prompt = PromptTemplate(
         input_variables=["input_val"],
-        template="Tell me an interesting fact about {input_val}",
+        template="Pay close attention to the following... {input_val}",
     )
     if model_provider == 'openai':
         result = call_openai(input_val, prompt)
@@ -38,7 +74,7 @@ def call_language_model(input_val):
 def call_vertexai(input_val, prompt):
     vertex_model_name = config.get("VERTEX_MODEL_NAME", "text-bison")
     logger.debug(f"Using Vertex AI model: {vertex_model_name}")
-    llm = VertexAI(model_name=vertex_model_name, temperature=0.9)
+    llm = VertexAI(model_name=vertex_model_name, temperature=float(config.get("MODEL_TEMPERATURE", 0.0)))
     chain = LLMChain(llm=llm, prompt=prompt)
     result = chain.run(input_val)
     return result
@@ -48,7 +84,7 @@ def call_openai(input_val, prompt):
     openai_model_name = config.get("OPENAI_MODEL_NAME", "gpt-3.5-turbo")
     logger.debug(f"Using OpenAI model: {openai_model_name}")
     if not spend_limit_exceeded():
-        llm = OpenAI(model_name=openai_model_name, temperature=0.9)
+        llm = OpenAI(model_name=openai_model_name, temperature=float(config.get("MODEL_TEMPERATURE", 0.0)))
         chain = LLMChain(llm=llm, prompt=prompt)
         with get_openai_callback() as cb:
             result = chain.run(input_val)
@@ -106,9 +142,9 @@ def get_bot_response(user_input):
     else:
         return call_language_model(user_input)
 
-@router.get("/items/")
-async def read_items():
-    return [{"name": "Foo"}]
+# @router.get("/items/")
+# async def read_items():
+#     return [{"name": "Foo"}]
 
 @router.get("/")
 def handle_request():

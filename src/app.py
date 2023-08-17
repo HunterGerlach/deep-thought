@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.openapi.docs import get_swagger_ui_html
 import json
 
 from src.config import Config
@@ -21,13 +22,27 @@ def custom_openapi():
 
 DISABLE_SWAGGER = config.get("DISABLE_SWAGGER", "false").lower() == "true"
 
-app = FastAPI(docs_url=None if DISABLE_SWAGGER else "/docs")
+# Include a FastAPI app for each version currently supported and mount accordingly...
 
-app.include_router(v1_router, prefix="/v1")
-app.include_router(v2_router, prefix="/v2")
+## Create a FastAPI app for version 1
+app_v1 = FastAPI(docs_url=None if DISABLE_SWAGGER else "/", 
+    title=config.get("API_TITLE", "UNDEFINED"),
+    description=config.get("API_DESCRIPTION", "UNDEFINED"),
+    version=config.get("API_VERSION", "UNDEFINED"),
+)
+app_v1.include_router(v1_router)
 
-if not DISABLE_SWAGGER:
-    app.openapi = custom_openapi
+## Create a FastAPI app for version 2
+app_v2 = FastAPI(docs_url=None if DISABLE_SWAGGER else "/", 
+    title=config.get("API_TITLE", "UNDEFINED"),
+    description=config.get("API_DESCRIPTION", "UNDEFINED"),
+    version=config.get("API_VERSION", "UNDEFINED"),
+)
+app_v2.include_router(v2_router)
+
+app = FastAPI(docs_url=None)
+app.mount("/v1", app_v1)
+app.mount("/v2", app_v2)
 
 cors_origins = config.get("CORS_ORIGINS", "UNDEFINED")
 origins = [origin.strip() for origin in cors_origins.split(",")]
