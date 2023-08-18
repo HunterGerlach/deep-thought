@@ -1,0 +1,43 @@
+name: Linting
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+  push:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11'] # Support starts at v3.9
+      fail-fast: false
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    # - name: Install Dependencies
+    #   run: sudo apt-get install make
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Update pip
+      run: python3 -m pip install --upgrade pip
+
+    - name: Install Dependencies
+      run: |
+        pip install pylint
+        pip install -r requirements.txt
+
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+    - name: Run Lint
+      run: python3 -m pylint src

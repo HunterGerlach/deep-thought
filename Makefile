@@ -2,13 +2,16 @@ API_VERSIONS = v1 v2
 
 .PHONY: test run test-api test-all $(API_VERSIONS)
 
-test-all: test test-api
+run:
+	uvicorn src.app:app --reload
+
+lint:
+	-python3 -m pylint src
+
+test-all: lint test test-api
 
 test:
 	-python3 -m unittest discover
-
-run:
-	uvicorn src.app:app --reload
 
 test-api: $(API_VERSIONS)
 
