@@ -1,5 +1,8 @@
 # deep-thought
 
+[![Linting](https://github.com/HunterGerlach/deep-thought/actions/workflows/linting.yml/badge.svg?branch=main)](https://github.com/HunterGerlach/deep-thought/actions/workflows/linting.yml)
+[![Unit Tests](https://github.com/HunterGerlach/deep-thought/actions/workflows/unittest.yml/badge.svg?branch=main)](https://github.com/HunterGerlach/deep-thought/actions/workflows/unittest.yml)
+
 ## Setup instructions
 
 Setup local Python environment
@@ -27,19 +30,3 @@ python -m unittest discover
 ## API Details
 
 Information about the API can be found in the [API documentation](API.md).
-
-## Deployment to OpenShift
-
-Add the following to the `spec` section of the `Deployment` resource:
-
-```yaml
-spec:
-    template:
-        spec:
-            containers:
-                env:
-                    - name: APP_FILE
-                    value: src/app.py
-                    - name: PYTHONPATH
-                    value: /
-```

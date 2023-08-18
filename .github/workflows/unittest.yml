@@ -1,4 +1,4 @@
-name: Linting
+name: Unit Tests
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  lint:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -30,11 +30,10 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install pylint
-        pip install -r requirements.txt
+        pip install -r requirements.txt # If you have dependencies
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
-    - name: Run Lint
-      run: python3 -m pylint src
+    - name: Run Unit Tests
+      run: python3 -m unittest discover
