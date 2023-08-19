@@ -8,7 +8,6 @@ from langchain.llms import OpenAI
 from langchain.llms import VertexAI
 from langchain.callbacks import get_openai_callback
 from langchain.chains import LLMChain
-from langchain.output_parsers import GuardrailsOutputParser
 from langchain.prompts import PromptTemplate
 
 from src.config import Config
@@ -24,28 +23,6 @@ class HandleRequestPostBody(BaseModel): # pylint: disable=R0903
     """Class to define the request body for the handle_request_post endpoint."""
     user_input: str
 
-RAIL_SPEC = """
-<rail version="0.1">
-
-<output>
-    <object name="patient_info">
-        <string name="gender" description="Patient's gender" />
-        <integer name="age" format="valid-range: 0 100" />
-        <string name="symptoms" description="Symptoms that the patient is currently experiencing" />
-    </object>
-</output>
-
-<prompt>
-
-Given the following doctor's notes about a patient, please extract a dictionary that contains the patient's information.
-
-{{doctors_notes}}
-
-@complete_json_suffix_v2
-</prompt>
-</rail>
-"""
-
 def call_language_model(input_val):
     """Call the language model and return the result.
     
@@ -57,19 +34,6 @@ def call_language_model(input_val):
     """
     model_provider = config.get("MODEL_PROVIDER", "UNDEFINED")
     logger.debug("Using model provider: %s", model_provider)
-    output_parser = GuardrailsOutputParser.from_rail_string(RAIL_SPEC)
-    logger.warning("%s", output_parser.guard.base_prompt)
-    prompt = PromptTemplate(
-        template=output_parser.guard.base_prompt,
-        input_variables=output_parser.guard.prompt.variable_names,
-    )
-    model = OpenAI(temperature=0)
-    doctors_notes = """
-    49 y/o Male with chronic macular rash to face & hair, worse in beard, eyebrows & nares.
-    Itchy, flaky, slightly scaly. Moderate response to OTC steroid cream
-    """
-    output = model(prompt.format_prompt(doctors_notes=doctors_notes).to_string())
-    logger.warning(output_parser.parse(output))
     prompt = PromptTemplate(
         input_variables=["input_val"],
         template="Pay close attention to the following... {input_val}",
