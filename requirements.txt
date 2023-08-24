@@ -126,7 +126,7 @@ scikit-learn==1.3.0
 scipy==1.11.2
 sentence-transformers==2.2.2
 sentencepiece==0.1.99
-Shapely==1.8.5.post1
+Shapely==2.0.1
 six==1.16.0
 sniffio==1.3.0
 sortedcontainers==2.4.0
