@@ -1,6 +1,0 @@
-fastapi==0.101.0
-langchain==0.0.265
-python-dotenv==1.0.0
-termcolor==2.3.0
-urllib3==1.26.16
-uvicorn==0.23.2
