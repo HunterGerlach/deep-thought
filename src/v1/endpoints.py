@@ -120,18 +120,18 @@ async def handle_request_post(request_body: HandleRequestPostBody):
     bot_response = get_bot_response(user_input)
     return {"bot_response": bot_response}
 
-@router.post("/get_embedding_sources")
-def get_embedding_source(request_body: dict):
+@router.post("/find_sources")
+def find_sources(request_body: dict):
     query = request_body['query']
     num_results = request_body['num_results']
     if isinstance(query, list):
         query = ' '.join(query)
     embeddings = EmbeddingSource()
     result = embeddings.get_source(query, num_results)
-    return {"embedding_source": result}
+    return {"find_sources": result}
 
-@router.post("/synthesize_response")
-def synthesize_response(
+@router.post("/ask")
+def ask(
     query: str = Body(...),
     num_results: int = Body(3),
     prompt: str = Body(None)
