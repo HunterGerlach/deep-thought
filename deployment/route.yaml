@@ -1,0 +1,15 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: deep-thought
+spec:
+  to:
+    kind: Service
+    name: deep-thought
+    weight: 100
+  port:
+    targetPort: 8000-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

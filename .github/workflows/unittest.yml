@@ -1,0 +1,39 @@
+name: Unit Tests
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11'] # Support starts at v3.9
+      fail-fast: false
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Update pip
+      run: python3 -m pip install --upgrade pip
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt # If you have dependencies
+
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+    - name: Run Unit Tests
+      run: python3 -m unittest discover
