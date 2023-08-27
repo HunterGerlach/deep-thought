@@ -14,7 +14,7 @@ logger = setup_logger()
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
-    with open("specs/openapi.json", "r") as file:
+    with open("specs/openapi_v1.json", "r") as file:
         openapi_schema = json.load(file)
     app.openapi_schema = openapi_schema
     return app.openapi_schema
