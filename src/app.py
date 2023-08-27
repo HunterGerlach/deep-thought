@@ -14,7 +14,7 @@ logger = setup_logger()
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
-    with open("specs/openapi.json", "r") as file:
+    with open("specs/openapi_v1.json", "r") as file:
         openapi_schema = json.load(file)
     app.openapi_schema = openapi_schema
     return app.openapi_schema
@@ -46,4 +46,4 @@ def handle_exception(request, exc):
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0")
+    uvicorn.run(app, host="0.0.0.0", debug=True)
