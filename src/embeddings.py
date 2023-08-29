@@ -1,4 +1,4 @@
-import os
+"""Module for handling embeddings."""
 
 from typing import List, Union
 
@@ -13,29 +13,46 @@ logger = setup_logger()
 
 embedding_model_name = config.get('EMBEDDING_MODEL_NAME', "all-MiniLM-L6-v2")
 
-class EmbeddingSource:    
+class EmbeddingSource: # pylint: disable=R0903
+    """Class to handle embedding sources."""
+
     def __init__(self):
         self.embeddings = HuggingFaceEmbeddings(model_name=embedding_model_name)
-    
+
     def get_source(self, query: Union[str, List[str]], num_results: int) -> Union[dict, List[dict]]:
-        logger.debug(f"EMBEDDING_MODEL_NAME: {embedding_model_name}")
-        connection_string = config.get_secret('CONNECTION_STRING', "postgresql://UNDEFINED", mask=False)
-        logger.debug(f"CONNECTION_STRING: {config.get_secret('CONNECTION_STRING')}")
+        """Retrieve source based on the query.
+
+        Args:
+            query: The query text or list of texts.
+            num_results: Number of results to retrieve.
+
+        Returns:
+            A dictionary or list of dictionaries containing the results.
+        """
+        logger.debug("EMBEDDING_MODEL_NAME: %s", embedding_model_name)
+        connection_string = config.get_secret(
+            'CONNECTION_STRING', "postgresql://UNDEFINED", mask=False)
+        logger.debug("CONNECTION_STRING: %s", config.get_secret('CONNECTION_STRING'))
         collection_name = config.get('COLLECTION_NAME', "sample_collection")
-        logger.debug(f"COLLECTION_NAME: {collection_name}")
-        logger.debug(f"query: {query}, num_results: {num_results}")
+        logger.debug("COLLECTION_NAME: %s", collection_name)
+        logger.debug("query: %s, num_results: %s", query, num_results)
         try:
-            db = PGVector(
+            database = PGVector(
                 collection_name=collection_name,
                 connection_string=connection_string,
                 embedding_function=self.embeddings,
             )
-        except Exception as e:
-            return {'error': f"PostgreSQL connection failed: {str(e)}"}
+        except ConnectionError as err:
+            return {'error': f"PostgreSQL connection failed: {str(err)}"}
+        except Exception as err: # pylint: disable=W0703
+            error_message = f'PostgreSQL connection failed: {str(err)}'
+            logger.warning(error_message)
+            return {'error': error_message}
 
         if isinstance(query, list):
             query = ' '.join(query)
 
-        docs_with_score = db.similarity_search_with_score(query, k=num_results)
-        results = [{'score': score, 'source': doc.metadata['source'], 'content': doc.page_content} for doc, score in docs_with_score]
+        docs_with_score = database.similarity_search_with_score(query, k=num_results)
+        results = [{'score': score, 'source': doc.metadata['source'], 'content': doc.page_content}
+                   for doc, score in docs_with_score]
         return results

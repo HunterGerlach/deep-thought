@@ -1,0 +1,32 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: deep-thought # change to your app name
+spec:
+  selector:
+    matchLabels:
+      app: deep-thought # change to your app name
+  template:
+    metadata:
+      labels:
+        app: deep-thought # change to your app name
+    spec:
+      containers:
+        - name: deep-thought
+          image: image-registry.openshift-image-registry.svc:5000/deep-thought-example/deep-thought:latest
+          
+          # Copy all the following lines
+          # and paste them into the end of the container definition
+          volumeMounts:
+            - name: deepthought-json
+              mountPath: /etc/42
+              readOnly: true
+          envFrom:
+            - configMapRef:
+                name: deep-thought-config
+            - secretRef:
+                name: deep-thought-secrets
+      volumes:
+        - name: deepthought-json
+          secret:
+            secretName: google-application-credentials
