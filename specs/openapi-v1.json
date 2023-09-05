@@ -2,11 +2,18 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Deep Thought",
+    "description": "Deep Thought API",
     "version": "1.0.0"
   },
+  "servers":[
+    {
+      "url":"/v1"
+    }
+  ],
   "paths": {
-    "/v1/": {
+    "/": {
       "get": {
+        "description": "Endpoint to handle GET requests.\n\nReturns:\n    dict: A dictionary containing an error message.",
         "summary": "Handle Request",
         "operationId": "handle_request__get",
         "responses": {
@@ -21,6 +28,7 @@
         }
       },
       "post": {
+        "description": "Endpoint to handle POST requests for user input.\n\nArgs:\n    request_body: The body of the request containing user input.\n\nReturns:\n    dict: A dictionary containing the bot response.",
         "summary": "Handle Request Post",
         "operationId": "handle_request_post__post",
         "requestBody": {
@@ -55,55 +63,12 @@
         }
       }
     },
-    "/v1/dont_get_embedding_sources": {
+
+    "/find_sources": {
       "post": {
+        "description": "Endpoint to get embedding sources for a given query.\n\nArgs:\n    request_body: The body of the request containing the query and number of results.\n\nReturns:\n    dict: A dictionary containing the embedding source.",
         "summary": "Get Embedding Source",
-        "operationId": "dont_get_embedding_source_dont_get_embedding_sources_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "title": "Request Body"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "402": {
-            "description": "Payment Required",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/get_embedding_sources": {
-      "post": {
-        "summary": "Get Embedding Source",
-        "operationId": "get_embedding_source_get_embedding_sources_post",
+        "operationId": "get_embedding_source_find_sources_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -137,15 +102,16 @@
         }
       }
     },
-    "/v1/synthesize_response": {
+    "/ask": {
       "post": {
+        "description": "Endpoint to synthesize a response to a user query.\n\nArgs:\n    query: The user query.\n    num_results: The number of results to return.\n    prompt: The prompt to use for the response.\n\nReturns:\n    dict: A dictionary containing the bot response.",
         "summary": "Synthesize Response",
-        "operationId": "synthesize_response_synthesize_response_post",
+        "operationId": "synthesize_response_ask_post",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Body_synthesize_response_synthesize_response_post"
+                "$ref": "#/components/schemas/Body_synthesize_response_ask_post"
               }
             }
           },
@@ -160,20 +126,21 @@
               }
             }
           },
-          "402": {
-            "description": "Payment Required",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
           "422": {
             "description": "Validation Error",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {
                 }
               }
             }
@@ -184,7 +151,7 @@
   },
   "components": {
     "schemas": {
-      "Body_synthesize_response_synthesize_response_post": {
+      "Body_synthesize_response_ask_post": {
         "properties": {
           "query": {
             "type": "string",
@@ -202,8 +169,10 @@
         },
         "type": "object",
         "required": ["query"],
-        "title": "Body_synthesize_response_synthesize_response_post"
+        "title": "Body_synthesize_response_ask_post"
       },
+
+
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -218,6 +187,7 @@
         "title": "HTTPValidationError"
       },
       "HandleRequestPostBody": {
+        "description": "Class to define the request body for the handle_request_post endpoint.",
         "properties": {
           "user_input": {
             "type": "string",

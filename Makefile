@@ -1,4 +1,4 @@
-API_VERSIONS = v1 v2
+API_VERSIONS = v1
 SERVER_URL = http://127.0.0.1:8000
 SPEC_PATH = specs
 
