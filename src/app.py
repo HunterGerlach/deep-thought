@@ -32,10 +32,17 @@ app_v1 = FastAPI(docs_url=None if DISABLE_SWAGGER else "/",
 )
 app_v1.include_router(v1_router)
 
-
+## Create a FastAPI app for version 2
+app_v2 = FastAPI(docs_url=None if DISABLE_SWAGGER else "/",
+    title=config.get("API_TITLE", "UNDEFINED"),
+    description=config.get("API_DESCRIPTION", "UNDEFINED"),
+    version=config.get("API_VERSION", "UNDEFINED"),
+)
+app_v2.include_router(v2_router)
 
 app = FastAPI(docs_url=None)
 app.mount("/v1", app_v1)
+app.mount("/v2", app_v2)
 
 
 cors_origins = config.get("CORS_ORIGINS", "UNDEFINED")
