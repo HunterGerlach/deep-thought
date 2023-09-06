@@ -84,7 +84,7 @@ This API follows [Semantic Versioning](https://semver.org/), but only the major 
 To test versioning, you can hit two separate endpoints:
 
 ```bash
-curl -X 'GET' 'http://127.0.0.1:8000/v1/items/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
+curl -X 'GET' 'http://127.0.0.1:8000/v1/api_version_test/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
 ```
 
 Which should return:
@@ -92,7 +92,7 @@ Which should return:
 ```json
 [
   {
-    "name": "Foo"
+    "version": "V1"
   }
 ]
 ```
@@ -100,7 +100,7 @@ Which should return:
 And then:
 
 ```bash
-curl -X 'GET' 'http://127.0.0.1:8000/v2/items/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
+curl -X 'GET' 'http://127.0.0.1:8000/v2/api_version_test/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
 ```
 
 Which should return:
@@ -108,7 +108,7 @@ Which should return:
 ```json
 [
   {
-    "name": "Bar"
+    "version": "V2"
   }
 ]
 ```

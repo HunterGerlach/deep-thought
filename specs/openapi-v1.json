@@ -64,6 +64,24 @@
       }
     },
 
+    "/api_version_test/": {
+      "get": {
+        "description": "Test Endpoint for API v1 to read items.\n\nReturns:\n    list: The API current version.",
+        "operationId": "read_items_api_version_test__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Read Items"
+      }
+    },
+
     "/find_sources": {
       "post": {
         "description": "Endpoint to get embedding sources for a given query.\n\nArgs:\n    request_body: The body of the request containing the query and number of results.\n\nReturns:\n    dict: A dictionary containing the embedding source.",

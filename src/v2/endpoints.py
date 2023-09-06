@@ -8,12 +8,12 @@ logger = setup_logger()
 
 router = APIRouter()
 
-@router.get("/items/")
+@router.get("/api_version_test/")
 async def read_items():
     """Test Endpoint for API v2 to read items.
 
     Returns:
-        list: A list of items.
+        list: The API current version.
     """
-    logger.info("Fetching items")
-    return [{"name": "Bar"}]
+    logger.info("Fetching version")
+    return [{"version": "V2"}]

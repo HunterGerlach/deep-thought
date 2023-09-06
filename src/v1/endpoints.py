@@ -1,6 +1,6 @@
 """Module to define API routing and handle interactions with language models."""
 
-from fastapi import FastAPI, APIRouter, Body, HTTPException, Request
+from fastapi import APIRouter, Body, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel # pylint: disable=E0611
 
@@ -171,14 +171,14 @@ def generate_html_response():
 
 
 
-@router.get("/items/")
+@router.get("/api_version_test/")
 async def read_items():
     """Test Endpoint for API v1 to read items.
 
     Returns:
-        list: A list of items.
+        list: The API current version.
     """
-    return [{"name": "Foo"}]
+    return [{"version": "V1"}]
 
 @router.get("/")
 def handle_request():
