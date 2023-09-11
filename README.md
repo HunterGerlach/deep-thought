@@ -1,28 +1,11 @@
 # deep-thought
 
-## Setup instructions
+[![Linting](https://github.com/HunterGerlach/deep-thought/actions/workflows/linting.yml/badge.svg?branch=main)](https://github.com/HunterGerlach/deep-thought/actions/workflows/linting.yml)
+[![Unit Tests](https://github.com/HunterGerlach/deep-thought/actions/workflows/unittest.yml/badge.svg?branch=main)](https://github.com/HunterGerlach/deep-thought/actions/workflows/unittest.yml)
 
-Setup local Python environment
+## About
 
-```bash
-python3 -m venv .venv_deep-thought
-source .venv_deep-thought/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-export PYTHONPATH=$(pwd)
-```
-
-## Run the code
-
-```bash
-uvicorn src.app:app --reload
-```
-
-## Run the tests
-
-```bash
-python -m unittest discover
-```
+Deep Thought is a question-answering system that uses embeddings and a language model to find the most likely answer to a question. It also provides links to sources that support the answer.
 
 ## API Details
 
@@ -30,16 +13,8 @@ Information about the API can be found in the [API documentation](API.md).
 
 ## Deployment to OpenShift
 
-Add the following to the `spec` section of the `Deployment` resource:
+Information for deploying Deep Thought to OpenShift can be found in the [deployment documentation](deployment/README.md).
 
-```yaml
-spec:
-    template:
-        spec:
-            containers:
-                env:
-                    - name: APP_FILE
-                    value: src/app.py
-                    - name: PYTHONPATH
-                    value: /
-```
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).

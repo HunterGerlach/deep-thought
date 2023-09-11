@@ -5,7 +5,7 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/": {
+    "/v1/": {
       "get": {
         "summary": "Handle Request",
         "operationId": "handle_request__get",
@@ -55,7 +55,7 @@
         }
       }
     },
-    "/dont_get_embedding_sources": {
+    "/v1/dont_get_embedding_sources": {
       "post": {
         "summary": "Get Embedding Source",
         "operationId": "dont_get_embedding_source_dont_get_embedding_sources_post",
@@ -79,6 +79,14 @@
               }
             }
           },
+          "402": {
+            "description": "Payment Required",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -92,7 +100,7 @@
         }
       }
     },
-    "/get_embedding_sources": {
+    "/v1/get_embedding_sources": {
       "post": {
         "summary": "Get Embedding Source",
         "operationId": "get_embedding_source_get_embedding_sources_post",
@@ -129,7 +137,7 @@
         }
       }
     },
-    "/synthesize_response": {
+    "/v1/synthesize_response": {
       "post": {
         "summary": "Synthesize Response",
         "operationId": "synthesize_response_synthesize_response_post",
@@ -146,6 +154,14 @@
         "responses": {
           "200": {
             "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required",
             "content": {
               "application/json": {
                 "schema": {}
