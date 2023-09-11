@@ -203,7 +203,15 @@ async def handle_request_post(request_body: HandleRequestPostBody):
     bot_response = get_bot_response(user_input)
     return {"bot_response": bot_response}
 
-@router.post("/find_sources")
+@router.post("/find_sources", responses = {401: {
+                                        "description": "PostgreSQL connection failed",
+                                        "content": {
+                                            "application/json": {
+                                                "schema": {
+                                                }
+                                            }
+                                        }
+                                }})
 def get_embedding_source(request_body: dict):
     """Endpoint to get embedding sources for a given query.
 
@@ -282,6 +290,9 @@ def synthesize_response(
         f"<a href=\"{result.get('source_link', '#')}\">{result['source']}</a>"
         for result in embedding_results
     ]
-    bot_response += "\n\nPossibly Related Sources:\n" + '\n'.join(sources_used)
+    if sources_used:
+        bot_response += "\n\nPossibly Related Sources:\n" + '\n'.join(sources_used)
+    else:
+        bot_response += "\n\nNo Sources Found"
 
     return {"bot_response": bot_response}

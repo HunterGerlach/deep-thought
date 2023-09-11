@@ -1,5 +1,6 @@
 """Module for handling embeddings."""
 
+from http.client import HTTPException
 from typing import List, Union
 
 from langchain.vectorstores.pgvector import PGVector
@@ -47,7 +48,7 @@ class EmbeddingSource: # pylint: disable=R0903
         except Exception as err: # pylint: disable=W0703
             error_message = f'PostgreSQL connection failed: {str(err)}'
             logger.warning(error_message)
-            return {'error': error_message}
+            raise HTTPException(status_code=401, detail="PostgreSQL connection failed")
 
         if isinstance(query, list):
             query = ' '.join(query)

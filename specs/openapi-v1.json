@@ -116,6 +116,15 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "PostgreSQL connection failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                }
+              }
+            }
           }
         }
       }
