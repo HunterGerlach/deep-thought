@@ -48,7 +48,7 @@ class EmbeddingSource: # pylint: disable=R0903
         except Exception as err: # pylint: disable=W0703
             error_message = f'PostgreSQL connection failed: {str(err)}'
             logger.warning(error_message)
-            raise HTTPException(status_code=401, detail="PostgreSQL connection failed")
+            raise HTTPException(status_code=401, detail="PostgreSQL connection failed") from err
 
         if isinstance(query, list):
             query = ' '.join(query)

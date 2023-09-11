@@ -1,7 +1,9 @@
+import json
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import json
+
 
 from src.config import Config
 from src.logging_setup import setup_logger
@@ -61,11 +63,6 @@ def handle_exception(exc):
     logger.error("An error occurred: %s", exc)
     return JSONResponse(status_code=500, content={"message": "An internal error occurred"})
 
-@app.exception_handler(Exception)
-def handle_exception(exc):
-    """Handle exceptions and return a 500 error."""
-    logger.error("An error occurred: %s", exc)
-    return JSONResponse(status_code=500, content={"message": "An internal error occurred"})
 
 if __name__ == '__main__':
     import uvicorn
