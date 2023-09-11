@@ -1,3 +1,4 @@
+from http.client import HTTPException
 import os
 
 from typing import List, Union
@@ -30,8 +31,14 @@ class EmbeddingSource:
                 connection_string=connection_string,
                 embedding_function=self.embeddings,
             )
-        except Exception as e:
-            return {'error': f"PostgreSQL connection failed: {str(e)}"}
+        except ConnectionError as err:
+            error_message = f'PostgreSQL connection failed: {str(err)}'
+            logger.warning(error_message)
+            raise HTTPException(status_code=401, detail="PostgreSQL connection failed") from err
+        except Exception as err: # pylint: disable=W0703
+            error_message = f'PostgreSQL connection failed: {str(err)}'
+            logger.warning(error_message)
+            raise HTTPException(status_code=401, detail="PostgreSQL connection failed") from err
 
         if isinstance(query, list):
             query = ' '.join(query)
