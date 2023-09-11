@@ -1,8 +1,7 @@
 """Module for handling embeddings."""
 
-import os
-from http.client import HTTPException
 from typing import List, Union
+from fastapi import HTTPException
 
 from langchain.vectorstores.pgvector import PGVector
 from langchain.embeddings import HuggingFaceEmbeddings
