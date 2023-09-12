@@ -1,3 +1,5 @@
+"""Deep Thought Application"""
+
 import json
 
 from fastapi import FastAPI
