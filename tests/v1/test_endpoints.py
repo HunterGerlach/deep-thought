@@ -50,8 +50,8 @@ class TestMain(unittest.TestCase):
     def test_get_embedding_source(self, MockEmbeddingSource):
         mock_get_source = MockEmbeddingSource.return_value.get_source
         mock_get_source.return_value = 'Test response'
-        response = self.app.post('/get_embedding_sources', json={'query': 'test_query', 'num_results': 5})
-        self.assertEqual(response.json(), {'embedding_source': 'Test response'})
+        response = self.app.post('/find_sources', json={'query': 'test_query', 'num_results': 5})
+        self.assertEqual(response.json(), {'find_sources': 'Test response'})
 
     @patch('src.v1.endpoints.call_language_model')
     @patch('src.v1.endpoints.EmbeddingSource')
@@ -59,7 +59,7 @@ class TestMain(unittest.TestCase):
         mock_get_source = MockEmbeddingSource.return_value.get_source
         mock_get_source.return_value = [{'source': 'test_source', 'content': 'test_content'}]
         mock_call_language_model.return_value = 'Language model response'
-        response = self.app.post('/synthesize_response', json={'query': 'test_query', 'num_results': 5})
+        response = self.app.post('/ask', json={'query': 'test_query', 'num_results': 5})
         self.assertEqual(response.json(), {'bot_response': 'Language model response\n\nPossibly Related Sources:\n<a href="#">test_source</a>'})
 
     @patch('src.v1.endpoints.calculate_total_spent', return_value=0.0005)

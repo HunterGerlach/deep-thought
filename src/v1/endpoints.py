@@ -9,7 +9,6 @@ from langchain.llms import VertexAI
 from langchain.callbacks import get_openai_callback
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from starlette.responses import HTMLResponse
 
 from src.config import Config
 from src.embeddings import EmbeddingSource

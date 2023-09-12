@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 import unittest
 from unittest.mock import patch, MagicMock
 import logging
@@ -25,8 +26,11 @@ class TestEmbeddingSource(unittest.TestCase):
     def test_get_source_exception(self, MockPGVector):
         MockPGVector.side_effect = Exception('test_exception')
         embedding_source = EmbeddingSource()
-        results = embedding_source.get_source('test_query', 5)
-        self.assertEqual(results, {'error': 'PostgreSQL connection failed: test_exception'})
+        try:
+            embedding_source.get_source('test_query', 5)
+        except Exception as e:
+            self.assertEqual('PostgreSQL connection failed' , e.detail)
+            self.assertEqual(401 , e.status_code)
 
 if __name__ == "__main__":
     unittest.main()
