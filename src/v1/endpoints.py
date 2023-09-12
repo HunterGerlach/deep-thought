@@ -165,11 +165,6 @@ def get_bot_response(user_input):
         return 'My name is Chat Bot!'
     return call_language_model(user_input)
 
-def generate_html_response():
-    html_content=""
-    return HTMLResponse(content=html_content, status_code=402)
-
-
 
 @router.get("/api_version_test/")
 async def read_items():
