@@ -1,6 +1,7 @@
 """Module for handling embeddings."""
 
 from typing import List, Union
+from fastapi import HTTPException
 
 from langchain.vectorstores.pgvector import PGVector
 from langchain.embeddings import HuggingFaceEmbeddings
@@ -43,11 +44,13 @@ class EmbeddingSource: # pylint: disable=R0903
                 embedding_function=self.embeddings,
             )
         except ConnectionError as err:
-            return {'error': f"PostgreSQL connection failed: {str(err)}"}
+            error_message = f'PostgreSQL connection failed: {str(err)}'
+            logger.warning(error_message)
+            raise HTTPException(status_code=401, detail="PostgreSQL connection failed") from err
         except Exception as err: # pylint: disable=W0703
             error_message = f'PostgreSQL connection failed: {str(err)}'
             logger.warning(error_message)
-            return {'error': error_message}
+            raise HTTPException(status_code=401, detail="PostgreSQL connection failed") from err
 
         if isinstance(query, list):
             query = ' '.join(query)

@@ -18,7 +18,7 @@ Description: Find sources for a given query
 With curl:
 
 ```bash
-curl -X 'POST' 'http://127.0.0.1:8000/v1/get_embedding_sources' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
+curl -X 'POST' 'http://127.0.0.1:8000/v1/find_sources' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
 ```
 
 <!-- With Postman:
@@ -54,7 +54,7 @@ Description: Ask a question and get an answer with links to sources
 With curl:
 
 ```bash
-curl -X 'POST' 'http://127.0.0.1:8000/v1/synthesize_response' -H 'Content-Type: application/json' -d '{"query": "step by step instructions to install a new operator", "num_results": 1}'
+curl -X 'POST' 'http://127.0.0.1:8000/v1/ask' -H 'Content-Type: application/json' -d '{"query": "step by step instructions to install a new operator", "num_results": 1}'
 ```
 
 <!-- With Postman:
