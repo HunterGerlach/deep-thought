@@ -54,7 +54,7 @@ Description: Ask a question and get an answer with links to sources
 With curl:
 
 ```bash
-curl -X 'POST' 'http://127.0.0.1:8000/v1/ask/'-H 'Content-Type: application/json' -d '{"query": "step by step instructions to install a new operator"' -H 'Content-Type: application/json' -d '{, "num_results": 1}'
+curl -X 'POST' 'http://127.0.0.1:8000/v1/ask' -H 'Content-Type: application/json' -d '{"query": "step by step instructions to install a new operator", "num_results": 1}'
 ```
 
 <!-- With Postman:
@@ -84,7 +84,7 @@ This API follows [Semantic Versioning](https://semver.org/), but only the major 
 To test versioning, you can hit two separate endpoints:
 
 ```bash
-curl -X 'GET' 'http://127.0.0.1:8000/v1/api_version_test/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
+curl -X 'GET' 'http://127.0.0.1:8000/v1/items/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
 ```
 
 Which should return:

@@ -249,6 +249,8 @@ def synthesize_response(
     Returns:
         dict: A dictionary containing the bot response.
     """
+    if isinstance(query, list):
+        query = ' '.join(query)
 
     embeddings = EmbeddingSource()
     embedding_results = embeddings.get_source(query, num_results)

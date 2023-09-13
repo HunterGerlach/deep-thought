@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 import unittest
 from unittest.mock import patch, MagicMock
 import logging
