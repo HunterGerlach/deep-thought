@@ -167,21 +167,13 @@ def get_bot_response(user_input):
 
 @router.get("/api_version_test/")
 async def read_items():
-    """Test Endpoint for API v1 to read items.
+    """Test Endpoint for API v1.
 
     Returns:
         list: The API current version.
     """
-    return [{"version": "V1"}]
+    return [{"version": "v1"}]
 
-@router.get("/")
-def handle_request():
-    """Endpoint to handle GET requests.
-
-    Returns:
-        dict: A dictionary containing an error message.
-    """
-    return {"error": "Only POST requests are allowed"}
 
 @router.post("/")
 async def handle_request_post(request_body: HandleRequestPostBody):
@@ -206,7 +198,8 @@ async def handle_request_post(request_body: HandleRequestPostBody):
                                             }
                                         }
                                 }})
-def get_embedding_source(request_body: dict):
+def get_embedding_source(query: str = Body("step by step instructions to install a new operator"),
+                        num_results: int = Body(3)):
     """Endpoint to get embedding sources for a given query.
 
     Args:
@@ -216,8 +209,6 @@ def get_embedding_source(request_body: dict):
         dict: A dictionary containing the embedding source.
     """
 
-    query = request_body['query']
-    num_results = request_body['num_results']
     if isinstance(query, list):
         query = ' '.join(query)
     embeddings = EmbeddingSource()
@@ -235,7 +226,7 @@ def get_embedding_source(request_body: dict):
                                         }
                                 }})
 def synthesize_response(
-                        query: str = Body(...),
+                        query: str = Body("step by step instructions to install a new operator"),
                         num_results: int = Body(3),
                         prompt: str = Body(None)
                     ):

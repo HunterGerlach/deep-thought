@@ -10,10 +10,10 @@ router = APIRouter()
 
 @router.get("/api_version_test/")
 async def read_items():
-    """Test Endpoint for API v2 to read items.
+    """Test Endpoint for API v2.
 
     Returns:
         list: The API current version.
     """
     logger.info("Fetching version")
-    return [{"version": "V2"}]
+    return [{"version": "v2"}]

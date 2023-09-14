@@ -69,6 +69,7 @@ def main():
             response.raise_for_status()
             logger.error("Server was not ready, exiting2... %s", response)
             obj1 = response.json()
+            print(obj1)
             logger.error("Server was not ready, exiting3... %s", response)
         except requests.RequestException as err:
             logger.error("Error fetching JSON from FastAPI endpoint: %s", err)

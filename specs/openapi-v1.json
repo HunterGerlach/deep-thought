@@ -12,21 +12,6 @@
   ],
   "paths": {
     "/": {
-      "get": {
-        "description": "Endpoint to handle GET requests.\n\nReturns:\n    dict: A dictionary containing an error message.",
-        "summary": "Handle Request",
-        "operationId": "handle_request__get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      },
       "post": {
         "description": "Endpoint to handle POST requests for user input.\n\nArgs:\n    request_body: The body of the request containing user input.\n\nReturns:\n    dict: A dictionary containing the bot response.",
         "summary": "Handle Request Post",
@@ -66,7 +51,7 @@
 
     "/api_version_test/": {
       "get": {
-        "description": "Test Endpoint for API v1 to read items.\n\nReturns:\n    list: The API current version.",
+        "description": "Test Endpoint for API v1.\n\nReturns:\n    list: The API current version.",
         "operationId": "read_items_api_version_test__get",
         "responses": {
           "200": {
@@ -91,12 +76,15 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "title": "Request Body"
+                "allOf":[
+                  {
+                     "$ref":"#/components/schemas/Body_get_embedding_source_find_sources_post"
+                  }
+               ],
+               "title":"Body"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -138,11 +126,15 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Body_synthesize_response_ask_post"
+                "allOf":[
+                  {
+                     "$ref":"#/components/schemas/Body_synthesize_response_ask_post"
+                  }
+               ],
+               "title":"Body"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -182,7 +174,8 @@
         "properties": {
           "query": {
             "type": "string",
-            "title": "Query"
+            "title": "Query",
+            "default":"step by step instructions to install a new operator"
           },
           "num_results": {
             "type": "integer",
@@ -195,8 +188,23 @@
           }
         },
         "type": "object",
-        "required": ["query"],
         "title": "Body_synthesize_response_ask_post"
+      },
+      "Body_get_embedding_source_find_sources_post": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query",
+            "default":"step by step instructions to install a new operator"
+          },
+          "num_results": {
+            "type": "integer",
+            "title": "Num Results",
+            "default": 3
+          }
+        },
+        "type": "object",
+        "title": "Body_get_embedding_source_find_sources_post"
       },
 
 
@@ -213,17 +221,25 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "HandleRequestPostBody": {
-        "description": "Class to define the request body for the handle_request_post endpoint.",
+      "PaymentError": {
         "properties": {
-          "user_input": {
-            "type": "string",
-            "title": "User Input"
+          "detail": {
+            "items": {
+              "msg": {
+                "type": "string",
+                "title": "Message"
+              },
+              "type": {
+                "type": "string",
+                "title": "Error Type"
+              }
+            },
+            "type": "array",
+            "title": "Detail"
           }
         },
         "type": "object",
-        "required": ["user_input"],
-        "title": "HandleRequestPostBody"
+        "title": "HTTPValidationError"
       },
       "ValidationError": {
         "properties": {
