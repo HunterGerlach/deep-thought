@@ -110,7 +110,7 @@ pylint==2.17.5
 pyrate-limiter==2.10.0
 pyrsistent==0.19.3
 pytest==7.4.0
-pytest-subtests==0.7.0
+pytest-subtests==0.11.0
 python-dateutil==2.8.2
 python-dotenv==1.0.0
 PyYAML==6.0.1
