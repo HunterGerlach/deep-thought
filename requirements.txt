@@ -16,7 +16,7 @@ cmake==3.27.2
 colorama==0.4.6
 colored==2.2.3
 curlify==2.2.1
-dataclasses-json==0.5.14
+dataclasses-json==0.6.0
 dill==0.3.7
 eliot==1.14.0
 eliot-tree==21.0.0
