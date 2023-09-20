@@ -63,7 +63,7 @@
             "description": "Successful Response"
           }
         },
-        "summary": "Read Items"
+        "summary": "Test endpoint for v1"
       }
     },
 

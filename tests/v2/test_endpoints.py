@@ -11,7 +11,7 @@ class TestMain(unittest.TestCase):
     def test_read_items(self):
         response = client.get("/api_version_test/")
         assert response.status_code == 200
-        assert response.json() == [{"version": "V2"}]
+        assert response.json() == [{"version": "v2"}]
 
 if __name__ == "__main__":
     unittest.main()
