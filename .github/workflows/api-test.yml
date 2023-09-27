@@ -1,0 +1,60 @@
+name: API Spec Test
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - ".github/workflows/**"
+      - "Makefile"
+      - "pyproject.toml"
+      - "poetry.lock"
+  push:
+    branches:
+      - main
+
+env:
+  POETRY_VERSION: "1.6.1"
+  WORKDIR: ${{ inputs.working-directory == '' && '.' || inputs.working-directory }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"] # Support starts at v3.9
+      fail-fast: false
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }} + Poetry ${{ env.POETRY_VERSION }}
+        uses: "./.github/actions/poetry_setup"
+        with:
+          python-version: ${{ matrix.python-version }}
+          poetry-version: ${{ env.POETRY_VERSION }}
+          working-directory: ${{ inputs.working-directory }}
+          cache-key: lint-with-extras
+
+      - name: Check Poetry File
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          poetry check
+
+      - name: Check lock file
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          poetry lock --check
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          poetry install
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+      - name: Run API Spec Test
+        run: make test-api
