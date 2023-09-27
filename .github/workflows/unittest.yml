@@ -5,6 +5,9 @@ on:
     paths:
       - "src/**"
       - ".github/workflows/**"
+      - "Makefile"
+      - "pyproject.toml"
+      - "poetry.lock"
   push:
     branches:
       - main
