@@ -22,6 +22,8 @@ To deploy the deep thought application you need to perform a few steps as outlin
 - Create the first secret using `oc apply -f secrets.yaml -n deep-thought-example`.
 - Create the second secret using `oc apply -f google-application-credentials -n deep-thought-example`.
 
+Note: Secret values must be in base64 format. To convert a value to base64, run `echo -n "<value>" | base64 | tr -d '\n'` and use as your .
+
 ### 5. Create a Build Configuration
 
 - ~~If your repo contains a Dockerfile, use `oc new-build --strategy=docker --binary --name=<app-name>` to create a build configuration.~~
@@ -29,11 +31,11 @@ To deploy the deep thought application you need to perform a few steps as outlin
 
 ### 6. Edit the Service
 
-- Run `oc edit svc my-app` and update all instances of the port number to `8000`.
+- Run `oc edit svc deep-thought` and update all instances of the port number to `8000`.
 
 ### 7. Edit the Deployment
 
-- Run `oc edit deployment deep-thought` and add the ConfigMap and Secrets as environment variables and mount the credentials file as a volumeMount. See `deployment.yaml` for an example.
+- Run `oc edit deployment deep-thought` and add the ConfigMap and Secrets as environment variables and mount the credentials file as a volumeMount. See `deployment.yaml` for an example. The volumes section needs to be separate from the rest.
 
 ### 8. Create a Route
 
