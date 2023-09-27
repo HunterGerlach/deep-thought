@@ -3,10 +3,8 @@
 Setup local Python environment
 
 ```bash
-python3 -m venv .venv_deep-thought
-source .venv_deep-thought/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
+poetry install
+poetry shell
 export PYTHONPATH=$(pwd)
 ```
 
