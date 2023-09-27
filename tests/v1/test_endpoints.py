@@ -36,10 +36,6 @@ class TestMain(unittest.TestCase):
         response = get_bot_response('other_input')
         self.assertEqual(response, 'Language model response')
 
-    def test_handle_request_get(self):
-        response = self.app.get('/')
-        self.assertEqual(response.json(), {'error': 'Only POST requests are allowed'})
-
     @patch('src.v1.endpoints.get_bot_response')
     def test_handle_request_post(self, mock_get_bot_response):
         mock_get_bot_response.return_value = 'Bot response'

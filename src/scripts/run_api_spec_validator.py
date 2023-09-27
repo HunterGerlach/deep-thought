@@ -26,7 +26,7 @@ def parse_args():
                         default=int(os.getenv('SERVER_PORT', '8000')),
                         help='Port of the FastAPI server.')
     parser.add_argument('--server-url',
-                        default=os.getenv('SERVER_URL', 'http://127.0.0.1:8000/openapi.json'),
+                        default=os.getenv('SERVER_URL', 'http://127.0.0.1:8000/openapi-v1.json'),
                         help='URL of the FastAPI server.')
     parser.add_argument('--spec-file',
                         required=True,
@@ -65,8 +65,12 @@ def main():
         logger.info("Fetching JSON from FastAPI endpoint...")
         try:
             response = requests.get(args.server_url, timeout=args.timeout)
+            logger.error("Server was not ready, exiting1... %s", response)
             response.raise_for_status()
+            logger.error("Server was not ready, exiting2... %s", response)
             obj1 = response.json()
+            print(obj1)
+            logger.error("Server was not ready, exiting3... %s", response)
         except requests.RequestException as err:
             logger.error("Error fetching JSON from FastAPI endpoint: %s", err)
             server.terminate()

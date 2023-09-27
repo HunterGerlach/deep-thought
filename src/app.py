@@ -1,9 +1,11 @@
-"""App module for managing the Deep Thought FastAPI application versions."""
+"""Deep Thought Application"""
 
 import json
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
 
 from src.config import Config
 from src.logging_setup import setup_logger
@@ -17,7 +19,7 @@ def custom_openapi():
     """Custom function to load OpenAPI schema."""
     if app.openapi_schema:
         return app.openapi_schema
-    with open("specs/openapi.json", "r", encoding='utf-8') as file:
+    with open("specs/openapi-v1.json", "r", encoding='utf-8') as file:
         openapi_schema = json.load(file)
     app.openapi_schema = openapi_schema
     return app.openapi_schema
@@ -46,6 +48,7 @@ app = FastAPI(docs_url=None)
 app.mount("/v1", app_v1)
 app.mount("/v2", app_v2)
 
+
 cors_origins = config.get("CORS_ORIGINS", "UNDEFINED")
 origins = [origin.strip() for origin in cors_origins.split(",")]
 app.add_middleware(
@@ -61,6 +64,7 @@ def handle_exception(exc):
     """Handle exceptions and return a 500 error."""
     logger.error("An error occurred: %s", exc)
     return JSONResponse(status_code=500, content={"message": "An internal error occurred"})
+
 
 if __name__ == '__main__':
     import uvicorn

@@ -25,10 +25,10 @@ class HandleRequestPostBody(BaseModel): # pylint: disable=R0903
 
 def call_language_model(input_val):
     """Call the language model and return the result.
-    
+
     Args:
         input_val: The input value to pass to the language model.
-    
+
     Returns:
         The result from the language model.
     """
@@ -48,10 +48,10 @@ def call_language_model(input_val):
 
 def call_vertexai(input_val, prompt):
     """Call the Vertex AI language model and return the result.
-    
+
     Args:
         input_val: The input value to pass to the language model.
-    
+
     Returns:
         The result from the language model.
     """
@@ -65,10 +65,10 @@ def call_vertexai(input_val, prompt):
 
 def call_openai(input_val, prompt):
     """Call the OpenAI language model and return the result.
-    
+
     Args:
         input_val: The input value to pass to the language model.
-    
+
     Returns:
         The result from the language model.
     """
@@ -88,10 +88,10 @@ def call_openai(input_val, prompt):
 
 def token_cost(total_tokens):
     """Calculate the cost of the tokens and log it.
-    
+
     Args:
         total_tokens: The total number of tokens used.
-    
+
     Returns:
         The total cost of the tokens.
     """
@@ -114,10 +114,10 @@ def token_cost(total_tokens):
 
 def calculate_total_spent(spend_log_file):
     """Calculate the total amount spent on tokens.
-    
+
     Args:
         spend_log_file: The file containing the spend log.
-    
+
     Returns:
         The total amount spent on tokens.
     """
@@ -128,10 +128,10 @@ def calculate_total_spent(spend_log_file):
 
 def spend_limit_exceeded():
     """Check whether the spend limit has been exceeded.
-    
+
     Args:
         None
-    
+
     Returns:
         True if the spend limit has been exceeded, False otherwise.
     """
@@ -150,10 +150,10 @@ def spend_limit_exceeded():
 
 def get_bot_response(user_input):
     """Get the bot response.
-    
+
     Args:
         user_input: The user input to pass to the bot.
-    
+
     Returns:
         The bot response.
     """
@@ -164,28 +164,21 @@ def get_bot_response(user_input):
         return 'My name is Chat Bot!'
     return call_language_model(user_input)
 
-@router.get("/items/")
+
+@router.get("/api_version_test/")
 async def read_items():
-    """Test Endpoint for API v1 to read items.
+    """Test Endpoint for API v1.
 
     Returns:
-        list: A list of items.
+        list: The API current version.
     """
-    return [{"name": "Foo"}]
+    return [{"version": "v1"}]
 
-@router.get("/")
-def handle_request():
-    """Endpoint to handle GET requests.
-    
-    Returns:
-        dict: A dictionary containing an error message.
-    """
-    return {"error": "Only POST requests are allowed"}
 
 @router.post("/")
 async def handle_request_post(request_body: HandleRequestPostBody):
     """Endpoint to handle POST requests for user input.
-    
+
     Args:
         request_body: The body of the request containing user input.
 
@@ -196,8 +189,17 @@ async def handle_request_post(request_body: HandleRequestPostBody):
     bot_response = get_bot_response(user_input)
     return {"bot_response": bot_response}
 
-@router.post("/find_sources")
-def find_sources(request_body: dict):
+@router.post("/find_sources", responses = {401: {
+                                        "description": "PostgreSQL connection failed",
+                                        "content": {
+                                            "application/json": {
+                                                "schema": {
+                                                }
+                                            }
+                                        }
+                                }})
+def get_embedding_source(query: str = Body("step by step instructions to install a new operator"),
+                        num_results: int = Body(3)):
     """Endpoint to get embedding sources for a given query.
 
     Args:
@@ -206,27 +208,35 @@ def find_sources(request_body: dict):
     Returns:
         dict: A dictionary containing the embedding source.
     """
-    query = request_body['query']
-    num_results = request_body['num_results']
+
     if isinstance(query, list):
         query = ' '.join(query)
     embeddings = EmbeddingSource()
     result = embeddings.get_source(query, num_results)
     return {"find_sources": result}
 
-@router.post("/ask")
-def ask(
-    query: str = Body(...),
-    num_results: int = Body(3),
-    prompt: str = Body(None)
-):
+
+@router.post("/ask", responses = {402: {
+                                        "description": "Payment Required",
+                                        "content": {
+                                            "application/json": {
+                                                "schema": {
+                                                }
+                                            }
+                                        }
+                                }})
+def synthesize_response(
+                        query: str = Body("step by step instructions to install a new operator"),
+                        num_results: int = Body(3),
+                        prompt: str = Body(None)
+                    ):
     """Endpoint to synthesize a response to a user query.
-    
+
     Args:
         query: The user query.
         num_results: The number of results to return.
         prompt: The prompt to use for the response.
-     
+
     Returns:
         dict: A dictionary containing the bot response.
     """
@@ -259,16 +269,17 @@ def ask(
         )
 
     prompt = prompt.format(embedding_results=embedding_results_text)
-
     logger.info("Query: %s", query)
     logger.info("Prompt: %s", prompt)
-
     bot_response = call_language_model(prompt)
 
     sources_used = [
-        f"<a href=\"{result.get('source_link', '#')}\">{result['source']}</a>" 
+        f"<a href=\"{result.get('source_link', '#')}\">{result['source']}</a>"
         for result in embedding_results
     ]
-    bot_response += "\n\nPossibly Related Sources:\n" + '\n'.join(sources_used)
+    if sources_used:
+        bot_response += "\n\nPossibly Related Sources:\n" + '\n'.join(sources_used)
+    else:
+        bot_response += "\n\nNo Sources Found"
 
     return {"bot_response": bot_response}
