@@ -4,132 +4,27 @@
     "title": "Deep Thought",
     "version": "2.0.0"
   },
-  "paths": {
-    "/v1/": {
-      "get": {
-        "summary": "Handle Request",
-        "operationId": "handle_request__get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Handle Request Post",
-        "operationId": "handle_request_post__post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HandleRequestPostBody"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
+  "servers": [
+    {
+      "url": "/v2"
     }
-  },
-  "components": {
-    "schemas": {
-      "Body_synthesize_response_synthesize_response_post": {
-        "properties": {
-          "query": {
-            "type": "string",
-            "title": "Query"
-          },
-          "num_results": {
-            "type": "integer",
-            "title": "Num Results",
-            "default": 3
-          },
-          "prompt": {
-            "type": "string",
-            "title": "Prompt"
+  ],
+  "paths": {
+    "/api_version_test/": {
+      "get": {
+        "summary": "Read Items",
+        "description": "Test Endpoint for API v2.\n\nReturns:\n    list: The API current version.",
+        "operationId": "read_items_api_version_test__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
-        },
-        "type": "object",
-        "required": ["query"],
-        "title": "Body_synthesize_response_synthesize_response_post"
-      },
-      "HTTPValidationError": {
-        "properties": {
-          "detail": {
-            "items": {
-              "$ref": "#/components/schemas/ValidationError"
-            },
-            "type": "array",
-            "title": "Detail"
-          }
-        },
-        "type": "object",
-        "title": "HTTPValidationError"
-      },
-      "HandleRequestPostBody": {
-        "properties": {
-          "user_input": {
-            "type": "string",
-            "title": "User Input"
-          }
-        },
-        "type": "object",
-        "required": ["user_input"],
-        "title": "HandleRequestPostBody"
-      },
-      "ValidationError": {
-        "properties": {
-          "loc": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "integer"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Location"
-          },
-          "msg": {
-            "type": "string",
-            "title": "Message"
-          },
-          "type": {
-            "type": "string",
-            "title": "Error Type"
-          }
-        },
-        "type": "object",
-        "required": ["loc", "msg", "type"],
-        "title": "ValidationError"
+        }
       }
     }
   }
