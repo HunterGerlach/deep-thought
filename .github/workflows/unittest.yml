@@ -9,6 +9,10 @@ on:
     branches:
       - main
 
+env:
+  POETRY_VERSION: "1.6.1"
+  WORKDIR: ${{ inputs.working-directory == '' && '.' || inputs.working-directory }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -21,20 +25,33 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Set up Python ${{ matrix.python-version }} + Poetry ${{ env.POETRY_VERSION }}
+        uses: "./.github/actions/poetry_setup"
         with:
           python-version: ${{ matrix.python-version }}
+          poetry-version: ${{ env.POETRY_VERSION }}
+          working-directory: ${{ inputs.working-directory }}
+          cache-key: lint-with-extras
 
-      - name: Update pip
-        run: python3 -m pip install --upgrade pip
-
-      - name: Install Dependencies
+      - name: Check Poetry File
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
         run: |
-          pip install -r requirements.txt # If you have dependencies
+          poetry check
+
+      - name: Check lock file
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          poetry lock --check
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          poetry install
 
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
       - name: Run Unit Tests
-        run: python3 -m unittest discover
+        run: make test
