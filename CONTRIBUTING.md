@@ -1,13 +1,35 @@
-## Setup
+# Deep Thought Contributing Guide
 
-Setup local Python environment
+Documentation for contributing to Deep Thought.
+
+## Install Poetry
+
+Setup local Python environment for Deep Thought using Poetry for dependency management.
+
+It is assumed that you have already installed Poetry on your local machine. If not, please follow the instructions [here](https://python-poetry.org/docs/#installation).
 
 ```bash
-python3 -m venv .venv_deep-thought
-source .venv_deep-thought/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-export PYTHONPATH=$(pwd)
+poetry install # initial installation of dependencies
+poetry shell # activate the virtual environment
+export PYTHONPATH=$(pwd) # add the current directory to the PYTHONPATH
+```
+
+### Update dependencies
+
+```bash
+poetry update # update dependencies
+```
+
+### Add a new dependency
+
+```bash
+poetry add <package-name> # add a new dependency
+```
+
+### Remove a dependency
+
+```bash
+poetry remove <package-name> # remove a dependency
 ```
 
 ## Common Developer Tasks

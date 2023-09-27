@@ -6,27 +6,26 @@ SPEC_PATH = specs
 
 run:
 	@echo "Current virtualenv: $(VIRTUAL_ENV)"
-	@echo "Is guardrails-ai dependency installed? $(shell pip3 list | grep guardrails-ai)"
 	@uvicorn src.app:app --reload
 
 install:
-	pip3 install -r requirements.txt
+	poetry install
 
 upgrade-dependencies:
 	./src/scripts/upgrade-dependencies.sh
 
 lint:
-	python3 -m pylint src
+	poetry run pylint src
 
 test-all: lint test test-api
 
 test:
-	python3 -m unittest discover
+	poetry run pytest
 
 test-api: $(API_VERSIONS)
 
 $(API_VERSIONS):
-	-python3 src/scripts/run_api_spec_validator.py --server-url $(SERVER_URL)/$@/openapi.json --spec-file $(SPEC_PATH)/openapi-$@.json
+	-poetry run python3 src/scripts/run_api_spec_validator.py --server-url $(SERVER_URL)/$@/openapi.json --spec-file $(SPEC_PATH)/openapi-$@.json
 
 test-api-%:
-	python3 src/scripts/run_api_spec_validator.py --server-url $(SERVER_URL)/$*/openapi.json --spec-file $(SPEC_PATH)/openapi-$*.json
+	poetry run python3 src/scripts/run_api_spec_validator.py --server-url $(SERVER_URL)/$*/openapi.json --spec-file $(SPEC_PATH)/openapi-$*.json
