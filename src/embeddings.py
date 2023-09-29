@@ -20,7 +20,7 @@ class EmbeddingSource: # pylint: disable=R0903
     def __init__(self):
         self.embeddings = HuggingFaceEmbeddings(model_name=embedding_model_name)
 
-    def get_source(self, query: Union[str, List[str]], num_results: int) -> Union[dict, List[dict]]:
+    def get_source(self, query: Union[str, List[str]], num_results: int, connection_string: str = None, collection_name: str = None) -> Union[dict, List[dict]]:
         """Retrieve source based on the query.
 
         Args:
@@ -31,11 +31,13 @@ class EmbeddingSource: # pylint: disable=R0903
             A dictionary or list of dictionaries containing the results.
         """
         logger.debug("EMBEDDING_MODEL_NAME: %s", embedding_model_name)
-        connection_string = config.get_secret(
-            'CONNECTION_STRING', "postgresql://UNDEFINED", mask=False)
-        logger.debug("CONNECTION_STRING: %s", config.get_secret('CONNECTION_STRING'))
-        collection_name = config.get('COLLECTION_NAME', "sample_collection")
-        logger.debug("COLLECTION_NAME: %s", collection_name)
+        if connection_string is None:
+            connection_string = config.get_secret(
+                'CONNECTION_STRING', "postgresql://UNDEFINED", mask=False)
+            logger.debug("CONNECTION_STRING: %s", config.get_secret('CONNECTION_STRING'))
+        if collection_name is None:
+            collection_name = config.get('COLLECTION_NAME', "sample_collection")
+            logger.debug("COLLECTION_NAME: %s", collection_name)
         logger.debug("query: %s, num_results: %s", query, num_results)
         try:
             database = PGVector(

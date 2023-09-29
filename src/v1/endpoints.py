@@ -1,6 +1,6 @@
 """Module to define API routing and handle interactions with language models."""
 
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body, HTTPException, FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel # pylint: disable=E0611
 
@@ -14,10 +14,13 @@ from src.config import Config
 from src.embeddings import EmbeddingSource
 from src.logging_setup import setup_logger
 
+from src.v1.agents.gext_agent import router as gext_agent
+
 config = Config()
 logger = setup_logger()
 
 router = APIRouter()
+router.include_router(gext_agent, prefix="/agent/gext", tags=["agent", "gext"])
 
 class HandleRequestPostBody(BaseModel): # pylint: disable=R0903
     """Class to define the request body for the handle_request_post endpoint."""
