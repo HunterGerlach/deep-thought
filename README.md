@@ -15,6 +15,6 @@ Information about the API can be found in the [API documentation](API.md).
 
 Information for deploying Deep Thought to OpenShift can be found in the [deployment documentation](deployment/README.md).
 
-## Contributing
+## Contributing / Development
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).

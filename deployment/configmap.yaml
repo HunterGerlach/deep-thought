@@ -2,7 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: deep-thought-config
-  #namespace: deep-thought-dev
+  # namespace: deep-thought-dev
 data:
   PYTHONPATH: /
   SPENDING_WARNING_PCT: '0.8'

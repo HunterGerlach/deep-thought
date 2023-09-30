@@ -1,0 +1,16 @@
+extends: default
+
+rules:
+  document-start: disable
+  line-length: disable
+  comments-indentation: disable
+  new-line-at-end-of-file: disable
+  indentation:
+    indent-sequences: whatever
+    # ignore: kludgeops/
+  truthy: disable
+  trailing-spaces: enable
+
+ignore:
+  - venv/
+  - .venv/

@@ -4,6 +4,29 @@ SPEC_PATH = specs
 
 .PHONY: test run test-api test-all $(API_VERSIONS)
 
+venv/bin/activate: requirements-devel.txt
+	python3 -m venv venv
+	. venv/bin/activate
+	pip install --upgrade pip setuptools wheel
+	pip install -r requirements-devel.txt
+	poetry install
+
+clean-prereqs:
+	rm -rf venv
+.PHONY: clean-prereqs
+
+prereqs: venv/bin/activate
+ifndef VIRTUAL_ENV
+	$(error run: . venv/bin/activate)
+endif
+.PHONY: prereqs
+
+lint: prereqs
+	yamllint .
+	black .
+	poetry run pylint src
+.PHONY: prereqs lint
+
 run:
 	@echo "Current virtualenv: $(VIRTUAL_ENV)"
 	@uvicorn src.app:app --reload
@@ -13,9 +36,6 @@ install:
 
 upgrade-dependencies:
 	./src/scripts/upgrade-dependencies.sh
-
-lint:
-	poetry run pylint src
 
 test-all: lint test test-api
 

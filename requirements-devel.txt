@@ -1,0 +1,5 @@
+black
+poetry
+pylint
+pyspelling
+yamllint
