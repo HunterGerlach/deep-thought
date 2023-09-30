@@ -29,10 +29,6 @@ Note: Secret values must be in base64 format. To convert a value to base64, run 
 - ~~If your repo contains a Dockerfile, use `oc new-build --strategy=docker --binary --name=<app-name>` to create a build configuration.~~
 - If you're using a Source-to-Image (S2I) build, use `oc new-app https://github.com/HunterGerlach/deep-thought --name=deep-thought -n deep-thought-example`.
 
-### 6. Edit the Service
-
-- Run `oc edit svc deep-thought` and update all instances of the port number to `8000`.
-
 ### 7. Edit the Deployment
 
 - Run `oc edit deployment deep-thought` and add the ConfigMap and Secrets as environment variables and mount the credentials file as a volumeMount. See `deployment.yaml` for an example. The volumes section needs to be separate from the rest.
@@ -79,7 +75,7 @@ Note: Secret values must be in base64 format. To convert a value to base64, run 
 - Click on the `+Add` button.
 - Select ~~`From Dockerfile` or~~ `Import from Git`.
 - Enter a URL to your repo (e.g. `https://github.com/HunterGerlach/deep-thought.git`). OpenShift should automatically identify the language and choose the appropriate builder image.
-- Set the port to `8000`.
+- Set the port to `8080`.
 - Click `Create`.
 
 ### 5. Start the Build

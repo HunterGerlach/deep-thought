@@ -18,7 +18,7 @@ Description: Find sources for a given query
 With curl:
 
 ```bash
-curl -X 'POST' 'http://127.0.0.1:8000/v1/find_sources' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
+curl -X 'POST' 'http://127.0.0.1:8080/v1/find_sources' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
 ```
 
 <!-- With Postman:
@@ -36,7 +36,7 @@ Description: Find the most likely fact for a given query
 With curl:
 
 ```bash
-curl -X 'POST' 'http://127.0.0.1:8000/v1/' -H 'Content-Type: application/json' -d '{"user_input": "whats for dinner"}'
+curl -X 'POST' 'http://127.0.0.1:8080/v1/' -H 'Content-Type: application/json' -d '{"user_input": "whats for dinner"}'
 ```
 
 <!-- With Postman:
@@ -54,13 +54,13 @@ Description: Ask a question and get an answer with links to sources
 With curl:
 
 ```bash
-curl -X 'POST' 'http://127.0.0.1:8000/v1/ask' -H 'Content-Type: application/json' -d '{"query": "step by step instructions to install a new operator", "num_results": 1}'
+curl -X 'POST' 'http://127.0.0.1:8080/v1/ask' -H 'Content-Type: application/json' -d '{"query": "step by step instructions to install a new operator", "num_results": 1}'
 ```
 
 <!-- With Postman:
 
 ```bash
-POST http://localhost:8000/v1/synthesize_response
+POST http://localhost:8080/v1/synthesize_response
 ``` -->
 
 ## OpenAPI (Swagger) Specification
@@ -84,7 +84,7 @@ This API follows [Semantic Versioning](https://semver.org/), but only the major 
 To test versioning, you can hit two separate endpoints:
 
 ```bash
-curl -X 'GET' 'http://127.0.0.1:8000/v1/items/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
+curl -X 'GET' 'http://127.0.0.1:8080/v1/items/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
 ```
 
 Which should return:
@@ -100,7 +100,7 @@ Which should return:
 And then:
 
 ```bash
-curl -X 'GET' 'http://127.0.0.1:8000/v2/api_version_test/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
+curl -X 'GET' 'http://127.0.0.1:8080/v2/api_version_test/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
 ```
 
 Which should return:

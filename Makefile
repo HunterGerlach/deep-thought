@@ -1,7 +1,7 @@
 .ONESHELL:
 
 API_VERSIONS = v1 v2
-SERVER_URL = http://127.0.0.1:8000
+SERVER_URL = http://127.0.0.1:8080
 SPEC_PATH = specs
 
 .PHONY: test run test-api test-all $(API_VERSIONS)
@@ -28,12 +28,12 @@ lint: prereqs
 	yamllint .
 	pyspelling
 	# black .
-	poetry run pylint src
+	pylint src
 .PHONY: prereqs lint
 
 run:
 	@echo "Current virtualenv: $(VIRTUAL_ENV)"
-	@uvicorn src.app:app --reload
+	@uvicorn src.app:app --port 8080 --reload
 
 install: prereqs
 	. venv/bin/activate
