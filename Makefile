@@ -16,12 +16,13 @@ clean-prereqs:
 .PHONY: clean-prereqs
 
 prereqs: venv/bin/activate
-ifndef VIRTUAL_ENV
-	$(error run: . venv/bin/activate)
-endif
+# ifndef VIRTUAL_ENV
+# 	$(error run: . venv/bin/activate)
+# endif
 .PHONY: prereqs
 
 lint: prereqs
+	. venv/bin/activate
 	yamllint .
 	black .
 	poetry run pylint src
