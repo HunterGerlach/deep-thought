@@ -24,7 +24,8 @@ prereqs: venv/bin/activate
 lint: prereqs
 	. venv/bin/activate
 	yamllint .
-	black .
+	pyspelling
+	# black .
 	poetry run pylint src
 .PHONY: prereqs lint
 
