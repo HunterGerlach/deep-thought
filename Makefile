@@ -1,3 +1,5 @@
+.ONESHELL:
+
 API_VERSIONS = v1 v2
 SERVER_URL = http://127.0.0.1:8000
 SPEC_PATH = specs
@@ -33,7 +35,8 @@ run:
 	@echo "Current virtualenv: $(VIRTUAL_ENV)"
 	@uvicorn src.app:app --reload
 
-install:
+install: prereqs
+	. venv/bin/activate
 	poetry install
 
 upgrade-dependencies:
@@ -42,6 +45,7 @@ upgrade-dependencies:
 test-all: lint test test-api
 
 test:
+	. .venv/bin/activate
 	poetry run pytest
 
 test-api: $(API_VERSIONS)
