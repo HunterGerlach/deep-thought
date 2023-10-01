@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from src.logging_setup import setup_logger
+from logging_setup import setup_logger
 
 logger = setup_logger()
 

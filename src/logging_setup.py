@@ -3,7 +3,7 @@
 import logging
 from termcolor import colored
 
-from src.config import Config
+from config import Config
 
 config = Config()
 log_level = config.get("LOG_LEVEL", "INFO")

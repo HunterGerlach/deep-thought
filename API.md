@@ -4,10 +4,10 @@ The Deep Thought API is a REST API that provides access to the Deep Thought.
 
 ## Endpoint Details
 
-Endpoint specifications are defined in the OpenAPI spec. Each version of the API has its own spec. The specs can be found in the `/specs` directory.
+Endpoint specifications are defined in the OpenAPI spec. Each version of the API has its own spec. The specs can be found in the `src/specs` directory.
 
-- [v1](./specs/openapi-v1.json)
-- [v2](./specs/openapi-v2.json)
+- [v1](src/specs/openapi-v1.json)
+- [v2](src/specs/openapi-v2.json)
 
 ### Find Sources
 
