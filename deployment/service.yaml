@@ -4,10 +4,10 @@ metadata:
   name: deep-thought
 spec:
   ports:
-    - name: 8000-tcp
+    - name: 8080-tcp
       protocol: TCP
-      port: 8000
-      targetPort: 8000
+      port: 8080
+      targetPort: 8080
   # selector:
   #   app: deep-thought
   #   deployment: deep-thought

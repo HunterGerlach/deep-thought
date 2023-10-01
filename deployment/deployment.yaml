@@ -1,22 +1,19 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: deep-thought # change to your app name
+  name: deep-thought
 spec:
   selector:
     matchLabels:
-      app: deep-thought # change to your app name
+      app: deep-thought
   template:
     metadata:
       labels:
-        app: deep-thought # change to your app name
+        app: deep-thought
     spec:
       containers:
         - name: deep-thought
           image: image-registry.openshift-image-registry.svc:5000/deep-thought-example/deep-thought:latest
-          
-          # Copy all the following lines
-          # and paste them into the end of the container definition
           volumeMounts:
             - name: deepthought-json
               mountPath: /etc/42

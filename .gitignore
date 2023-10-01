@@ -4,6 +4,7 @@ debug.log
 spend.log
 .env.config
 .env.secrets
+dictionary.dic
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

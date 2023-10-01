@@ -7,10 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 
-from src.config import Config
-from src.logging_setup import setup_logger
-from src.v1.endpoints import router as v1_router
-from src.v2.endpoints import router as v2_router
+from config import Config
+from logging_setup import setup_logger
+from v1.endpoints import router as v1_router
+from v2.endpoints import router as v2_router
 
 config = Config()
 logger = setup_logger()
@@ -68,4 +68,4 @@ def handle_exception(exc):
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0")
+    uvicorn.run("__main__:app", host="0.0.0.0", port=8080, reload=True)

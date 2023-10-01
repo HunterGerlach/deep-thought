@@ -8,7 +8,7 @@ spec:
     name: deep-thought
     weight: 100
   port:
-    targetPort: 8000-tcp
+    targetPort: 8080-tcp
   tls:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect

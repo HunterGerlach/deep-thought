@@ -10,9 +10,9 @@ from langchain.callbacks import get_openai_callback
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
-from src.config import Config
-from src.embeddings import EmbeddingSource
-from src.logging_setup import setup_logger
+from config import Config
+from embeddings import EmbeddingSource
+from logging_setup import setup_logger
 
 config = Config()
 logger = setup_logger()

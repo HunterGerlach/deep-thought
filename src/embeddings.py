@@ -6,8 +6,8 @@ from fastapi import HTTPException
 from langchain.vectorstores.pgvector import PGVector
 from langchain.embeddings import HuggingFaceEmbeddings
 
-from src.config import Config
-from src.logging_setup import setup_logger
+from config import Config
+from logging_setup import setup_logger
 
 config = Config()
 logger = setup_logger()
