@@ -5,6 +5,7 @@ description = "A question-answering system that uses embeddings and a language m
 authors = ["Hunter Gerlach <hunter@huntergerlach.com>"]
 license = "GPL-3.0"
 readme = "README.md"
+packages = [{include = "app", from = "src"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
