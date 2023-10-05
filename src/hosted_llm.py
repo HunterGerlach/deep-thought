@@ -1,5 +1,7 @@
-import requests
+"""Module for handling self-hosted LLama2 models"""
+
 from typing import Any, List, Mapping, Optional
+import requests
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
 from langchain.schema.output_parser import BaseOutputParser
@@ -35,16 +37,15 @@ class HostedLLM(LLM):
         """Get the identifying parameters."""
         return {"uri": self.uri}
 
-
-class CustomLlamaParser(BaseOutputParser[str]):
+class CustomLlamaParser(BaseOutputParser[str]): # pylint: disable=R0903
     """Class to correctly parse model outputs"""
 
     def parse(self, text:str) -> str:
+        """Parse the output of our LLM"""
         if text.startswith("Model Server is not Working due"):
             return text
-        else:
-            cleaned = str(text).split("[/INST]")
-            return cleaned[1]
+        cleaned = str(text).split("[/INST]")
+        return cleaned[1]
 
     @property
     def _type(self) -> str:

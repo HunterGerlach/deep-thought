@@ -5,12 +5,12 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel # pylint: disable=E0611
 from langchain.llms import OpenAI
 from langchain.llms import VertexAI
-from src.hosted_llm import HostedLLM
-from src.hosted_llm import CustomLlamaParser
 from langchain.callbacks import get_openai_callback
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
+from src.hosted_llm import HostedLLM
+from src.hosted_llm import CustomLlamaParser
 from src.config import Config
 from src.embeddings import EmbeddingSource
 from src.logging_setup import setup_logger
@@ -51,6 +51,14 @@ def call_language_model(input_val):
 
 
 def call_hosted_llm(input_val, prompt):
+    """Call the hosted language model and return the result.
+
+    Args:
+        input_val: The input value to pass to the language model.
+
+    Returns:
+        The result from the language model.
+    """
     hosted_model_name = config.get("HOSTED_MODEL_NAME", "Llama2-Hosted")
     logger.debug("Using self-hosted model: %s", hosted_model_name)
     hosted_model_uri = config.get("HOSTED_MODEL_URI", None)
