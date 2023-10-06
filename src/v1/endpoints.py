@@ -2,12 +2,14 @@
 
 from fastapi import APIRouter, Body, HTTPException
 from fastapi.responses import JSONResponse
+import numpy as np
 from pydantic import BaseModel # pylint: disable=E0611
 
 from langchain.llms import OpenAI
 from langchain.llms import VertexAI
 from langchain.callbacks import get_openai_callback
 from langchain.chains import LLMChain
+from langchain.utils.math import cosine_similarity
 from langchain.prompts import PromptTemplate
 
 from src.config import Config
@@ -57,8 +59,11 @@ def call_vertexai(input_val, prompt):
     """
     vertex_model_name = config.get("VERTEX_MODEL_NAME", "text-bison")
     logger.debug("Using Vertex AI model: %s", vertex_model_name)
-    llm = VertexAI(model_name=vertex_model_name, temperature=float(
-        config.get("MODEL_TEMPERATURE", 0.0)))
+    llm = VertexAI(
+        model_name=vertex_model_name,
+        temperature=float(
+            config.get("MODEL_TEMPERATURE", 0.0))
+        )
     chain = LLMChain(llm=llm, prompt=prompt)
     result = chain.run(input_val)
     return result
@@ -147,6 +152,21 @@ def spend_limit_exceeded():
         logger.warning("SPEND_LIMIT warning")
     logger.debug("SPEND_LIMIT ($%.5f) not exceeded: $%.5f", float(spend_limit), total_spent)
     return False
+
+def calculate_confidence(query, result):
+    embeddings = EmbeddingSource()
+    query_vector = embeddings.vectorize_query(query)
+    result_vector = embeddings.vectorize_query(result)
+    similarity_matrix = cosine_similarity(np.array([query_vector]), np.array([result_vector]))
+    similarity = similarity_matrix[0][0]  # Since both are single vectors, we get a 1x1 matrix
+    logger.debug("Similarity: %s", similarity)
+
+    if similarity >= 0.7:
+        return "High"
+    elif similarity >= 0.4:
+        return "Medium"
+    else:
+        return "Low"
 
 def get_bot_response(user_input):
     """Get the bot response.
@@ -254,32 +274,78 @@ def synthesize_response(
         for result in embedding_results
     ])
 
-    if prompt is None:
+    if prompt is None:        
         prompt = (
-            "Below is the only information you know.\n"
-            "It was obtained by doing a vector search for the user's query:\n\n"
-            "---START INFO---\n\n{embedding_results}\n\n"
-            "---END INFO---\n\nYou must acknowledge the user's original query "
-            f"of \"{query}\". "
-            "Attempt to generate a summary of what you know from the sources provided "
-            "based ONLY on the information given and ONLY if it relates to the original query. "
-            "Use no other knowledge to respond. Do not make anything up. "
-            "You can let the reader know if do not think you have enough information "
-            "to respond to their query...\n\n"
+            "[BACKGROUND]\n"
+            "Forget any and all previous instructions.\n\n"
+            "[ROLE]\n"
+            "You are an AI that provides extremely technical engineering support for associates at a large open source tech company.\n"
+            "You stay on task and do NOT provide responses to requests that are out of scope for your role.\n\n"
+            "[USER QUERY]\n"
+            "The user's question is:\n\n"
+            f"{query}\n\n"
+            "[SOURCE INFO]\n"
+            "The information you provided below.\n"
+            "It is solely based on a vector search through available documentation for the user's query.\n"
+            "---START SOURCES---\n\n{embedding_results}\n\n"
+            "---END SOURCES---\n\n"
+            "[GUIDELINES]\n"
+            "- Generate a summary using ONLY the sources provided and nothing else.\n"
+            "- Your answer should be only one paragraph with NO extraneous whitespace.\n"
+            "- You MUST acknowledge the user's original query in an appropriate manner (don't simply repeat the question).\n"
+            "- Your answer should NOT be influenced by the user's query, but should be relevant to it.\n"
+            "- Consider alternative spellings, synonyms, and other ways of expressing the query.\n"
+            "- Simplicity and clarity are key. Do NOT provide any unnecessary extraneous information.\n"
+            "[DECIDING TO ANSWER]\n"
+            "- If you cannot provide a relevant response due to your technical role described earlier, then you MUST decline to answer and provide a clear explanation for why you declined (this is a high bar, so rarely decline).\n"
+            "- If you don't have enough information, you must clearly state that you cannot respond to the query.\n"
+            "- If you decline to answer, then you MUST provide a straightforward and clear explanation for why you declined.\n"
+            "It is vitally important that your response strictly adheres to each and every one of the above guidelines listed above.\n"
+            "Absolutely NO JOKES (or any other extraneous information) are allowed)!...unless they're SFW and extremely nerdy :-p\n"
+            "Now, take a deep breath and think step by step...\n\n"
         )
 
     prompt = prompt.format(embedding_results=embedding_results_text)
     logger.info("Query: %s", query)
     logger.info("Prompt: %s", prompt)
-    bot_response = call_language_model(prompt)
-
+    bot_response = call_language_model(prompt).strip()
+    logger.debug("Bot Response: %s", bot_response)
+    
+    # Calculate confidence for query and bot response. Prepend confidence to bot response.
+    confidence = calculate_confidence(query, bot_response)
+    bot_response = f"CONFIDENCE: {confidence}\n\n{bot_response}"
+    
     sources_used = [
-        f"<a href=\"{result.get('source_link', '#')}\">{result['source']}</a>"
+        # f"<a href=\"{result.get('source_link', '#')}\">{result['source']}</a>"
+        # for result in embedding_results
+        # TODO: remove this once the above is fixed
+        
+        
+        # f"{result['source']}"
+        # for result in embedding_results
+        
+        # Each source contains one of the following prefix URLs: embeddings/quarkus, embeddings/k8s, embeddings/istio
+        # We want to remove this prefix URL from the source name and replace it with the actual URL as outlined below
+        # e.g. embeddings/quarkus -> https://github.com/quarkusio/quarkusio.github.io/blob/develop
+        # e.g. embeddings/k8s -> https://github.com/kubernetes/website/blob/main/content/en/docs
+        # e.g. embeddings/istio -> https://github.com/istio/istio.io/blob/master/content/en/docs
+        
+        f"{result['source'].replace('embeddings/quarkus', 'https://github.com/quarkusio/quarkusio.github.io/blob/develop').replace('embeddings/k8s', 'https://github.com/kubernetes/website/blob/main').replace('embeddings/istio', 'https://github.com/istio/istio.io/blob/master')}"
         for result in embedding_results
     ]
     if sources_used:
-        bot_response += "\n\nPossibly Related Sources:\n" + '\n'.join(sources_used)
+        # bot_response += "\n\nPossibly Related Sources:\n" + '\n'.join(sources_used)
+        # Output Possible Sources in a numbered list (e.g. [1] Source 1, [2] Source 2, etc.)
+        bot_response += "\n\nPossibly Related Sources:\n" + '\n'.join([f"[{i+1}] {source}" for i, source in enumerate(sources_used)])
     else:
         bot_response += "\n\nNo Sources Found"
 
     return {"bot_response": bot_response}
+
+# Example Questions Asked in OpenShift Room:
+# Can you SSH to the node?
+
+# I have a question regarding statefulsets and pvcs. According to this article, https://kubernetes.io/docs/tasks/run-application/delete-stateful-set/#persistent-volumes
+# It seems you must manually delete a PVC when deleting/scaling down a statefulset pod. There was an article a couple years ago that mentioned this would become automatic (article stated it was in alpha preview, at the time) https://kubernetes.io/blog/2021/12/16/kubernetes-1-23-statefulset-pvc-auto-deletion/
+
+# Can someone please confirm the features available in Kubernetes, generally, as it applies to scaling down a statefulset that also has a claim template - does a PVC have to be manually deleted, or can this be done automatically, assuming the 'Delete' retention policy is set on the storage class? Thank you.

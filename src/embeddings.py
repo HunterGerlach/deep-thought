@@ -59,3 +59,14 @@ class EmbeddingSource: # pylint: disable=R0903
         results = [{'score': score, 'source': doc.metadata['source'], 'content': doc.page_content}
                    for doc, score in docs_with_score]
         return results
+
+    def vectorize_query(self, query: str) -> List[float]:
+        """Vectorize the query.
+
+        Args:
+            query: The query text.
+
+        Returns:
+            A list of floats representing the vectorized query.
+        """
+        return self.embeddings.embed_query(query)
