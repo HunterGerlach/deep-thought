@@ -340,10 +340,12 @@ def synthesize_response(
     confidence = calculate_confidence(query, bot_response)
     bot_response = f"CONFIDENCE: {confidence}\n\n{bot_response}"
     
+    logger.debug("Embedding_results: %s", embedding_results)
+    bot_response += f"\n\nSource Score: {embedding_results[0]['score']}"
     sources_used = [
         # f"<a href=\"{result.get('source_link', '#')}\">{result['source']}</a>"
         # for result in embedding_results
-        # TODO: remove this once the above is fixed
+        # TODO: remove this once the above link is fixed
         
         
         # f"{result['source']}"
@@ -363,7 +365,7 @@ def synthesize_response(
         # Output Possible Sources in a numbered list (e.g. [1] Source 1, [2] Source 2, etc.)
         bot_response += "\n\nPossibly Related Sources:\n" + '\n'.join([f"[{i+1}] {source}" for i, source in enumerate(sources_used)])
     else:
-        bot_response += "\n\nNo Sources Found"
+        bot_response += "\n\nNo Relevant Sources Found"
 
     return {"bot_response": bot_response}
 
