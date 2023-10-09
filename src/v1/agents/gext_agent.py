@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Body
 
 from langchain.chains import LLMChain
+from langchain.embeddings import VertexAIEmbeddings
 from langchain.llms import VertexAI
 from langchain.prompts import PromptTemplate
 
@@ -11,6 +12,11 @@ logger = setup_logger()
 
 router = APIRouter()
 
+# TODO: Move hardcoded vars to config
+EMBEDDING_MODEL_NAME = "text-bison@001"
+MAX_OUTPUT_TOKENS = 512
+TEMPERATURE = 0.0
+TOP_K = 1
 
 def call_language_model(input_val: str):
     """Get a response from a specified LLM with a specified prompt.
@@ -21,23 +27,20 @@ def call_language_model(input_val: str):
     Returns:
         _type_: _description_
     """
-    # TODO: Move hardcoded vars to config
-    
     # Create prompt template
     logger.debug("Using model provider: vertex")
     prompt = PromptTemplate(
         input_variables=["input_val"],
         template="{input_val}",
     )
-    logger.debug("Using Vertex AI model: text-bison@001")
+    logger.debug(f"Using Vertex AI model: {EMBEDDING_MODEL_NAME}")
     
     # Create the LLM object - customizable
     llm = VertexAI(
-        model_name="text-bison@001",
-        max_output_tokens=512,
-        temperature=0.0,
-        top_k=1,
-        # top_p=TOP_P,
+        model_name=EMBEDDING_MODEL_NAME,
+        max_output_tokens=MAX_OUTPUT_TOKENS,
+        temperature=TEMPERATURE,
+        top_k=TOP_K,
     )
     chain = LLMChain(llm=llm, prompt=prompt)
     
@@ -51,12 +54,12 @@ def get_quick_response(input_val: str):
     result = None
     if input_val == "help":
         result = "I am an agent for Global Expense and Travel trained on the GET policy and FAQs.\n" + \
-        "You can ask me any question about travel, expenses, or coporate cards at any time by invoking the /gext command."
+        "You can ask me any question about travel policies, expenses, or corporate cards."
     return result
 
 
-@router.get("/agent_test/")
-async def agent_test():
+@router.get("/test/")
+async def test():
     """Test endpoint for the gext agent.
 
     Returns:
@@ -85,10 +88,18 @@ async def ask(query: str = Body("help"), num_results: int = Body(4)):
     if quick_response is not None:
         return {"bot_response": quick_response}
         
+    # TODO: Where will the vectorstore for agents live? Or is that an agent-creator decision?
     gext_connection_string = "postgresql://UNDEFINED"
     gext_collection_name = "UNDEFINED"
 
     embeddings = EmbeddingSource()
+    embeddings.embeddings = VertexAIEmbeddings(
+        model_name=EMBEDDING_MODEL_NAME,
+        max_output_tokens=MAX_OUTPUT_TOKENS,
+        temperature=TEMPERATURE,
+        top_k=TOP_K,
+        # top_p=TOP_P,
+    )
     embedding_results = embeddings.get_source(query, num_results, gext_connection_string, gext_collection_name)
 
     embedding_results_text = '\n\n---\n\n'.join([
@@ -100,13 +111,14 @@ async def ask(query: str = Body("help"), num_results: int = Body(4)):
     ])
     
     # TODO: Placeholder
-    prompt = """Provide a detailed answer to the question based on the context below. \
-    If you don't know the answer, say "I don't know".
-
-    {embedding_results}
-
-    Question: {query}
-    Helpful Answer:"""
+    prompt = (
+        """You are a helpful assistant. """
+        """Provide a detailed answer to the question based on the context below. """
+        """If you don't know the answer, say "I don't know".\n\n"""
+        """{embedding_results}\n\n"""
+        """Question: {query}\n"""
+        """Helpful Answer:"""
+    )
     
     prompt = prompt.format(embedding_results=embedding_results_text, query=query)
     
