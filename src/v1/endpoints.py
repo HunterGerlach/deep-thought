@@ -3,13 +3,14 @@
 from fastapi import APIRouter, Body, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel # pylint: disable=E0611
-
 from langchain.llms import OpenAI
 from langchain.llms import VertexAI
 from langchain.callbacks import get_openai_callback
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
+from src.hosted_llm import HostedLLM
+from src.hosted_llm import CustomLlamaParser
 from src.config import Config
 from src.embeddings import EmbeddingSource
 from src.logging_setup import setup_logger
@@ -42,9 +43,30 @@ def call_language_model(input_val):
         result = call_openai(input_val, prompt)
     elif model_provider == 'vertex':
         result = call_vertexai(input_val, prompt)
+    elif model_provider == 'hosted':
+        result = call_hosted_llm(input_val, prompt)
     else:
         raise ValueError(f"Invalid model name: {model_provider}")
     return result
+
+
+def call_hosted_llm(input_val, prompt):
+    """Call the hosted language model and return the result.
+
+    Args:
+        input_val: The input value to pass to the language model.
+
+    Returns:
+        The result from the language model.
+    """
+    hosted_model_name = config.get("HOSTED_MODEL_NAME", "Llama2-Hosted")
+    logger.debug("Using self-hosted model: %s", hosted_model_name)
+    hosted_model_uri = config.get("HOSTED_MODEL_URI", None)
+    llm = HostedLLM(uri=hosted_model_uri)
+    chain = LLMChain(llm=llm, prompt=prompt, output_parser=CustomLlamaParser())
+    result = chain.run(input_val)
+    return result
+
 
 def call_vertexai(input_val, prompt):
     """Call the Vertex AI language model and return the result.
@@ -256,6 +278,7 @@ def synthesize_response(
 
     if prompt is None:
         prompt = (
+            "<s>[INST] <<SYS>> \n"
             "Below is the only information you know.\n"
             "It was obtained by doing a vector search for the user's query:\n\n"
             "---START INFO---\n\n{embedding_results}\n\n"
@@ -266,6 +289,8 @@ def synthesize_response(
             "Use no other knowledge to respond. Do not make anything up. "
             "You can let the reader know if do not think you have enough information "
             "to respond to their query...\n\n"
+            "<</SYS>>"
+            f"{query} [/INST]"
         )
 
     prompt = prompt.format(embedding_results=embedding_results_text)
