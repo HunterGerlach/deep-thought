@@ -25,7 +25,7 @@ torch = [
     {url = "https://download.pytorch.org/whl/cpu-cxx11-abi/torch-2.0.1%2Bcpu.cxx11.abi-cp310-cp310-linux_x86_64.whl", markers = "python_version=='3.10'"},
     {url = "https://download.pytorch.org/whl/cpu-cxx11-abi/torch-2.0.1%2Bcpu.cxx11.abi-cp311-cp311-linux_x86_64.whl", markers = "python_version=='3.11'"}
 ]
-pylint = "^2.17.6"
+pylint = "^3.0.2"
 
 
 [build-system]
