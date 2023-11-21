@@ -31,3 +31,7 @@ data:
   API_VERSION: 0.1.0
   API_DESCRIPTION: 'Deep Thought API'
   SPEC_KEYS_TO_IGNORE: 'components,paths,info,'
+
+
+# oc apply -f configmap.yaml -n admin-devspaces
+# oc label configmap deep-thought-config controller.devfile.io/mount-to-devworkspace=true controller.devfile.io/watch-configmap=true
