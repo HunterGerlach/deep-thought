@@ -84,15 +84,17 @@ This API follows [Semantic Versioning](https://semver.org/), but only the major 
 To test versioning, you can hit two separate endpoints:
 
 ```bash
-curl -X 'GET' 'http://0.0.0.0:8000/v1/items/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
+curl -X 'GET' 'http://0.0.0.0:8000/v1/api_version_test/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
 ```
+
+> Note: If running in Dev Spaces, use the route created for you automatically. There's no need to add the port number.
 
 Which should return:
 
 ```json
 [
   {
-    "version": "V1"
+    "version": "v1"
   }
 ]
 ```
@@ -103,12 +105,14 @@ And then:
 curl -X 'GET' 'http://0.0.0.0:8000/v2/api_version_test/' -H 'Content-Type: application/json' -d '{"query": "test_query", "num_results": 2}'
 ```
 
+> Note: If running in Dev Spaces, use the route created for you automatically. There's no need to add the port number.
+
 Which should return:
 
 ```json
 [
   {
-    "version": "V2"
+    "version": "v2"
   }
 ]
 ```
