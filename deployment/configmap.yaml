@@ -35,3 +35,4 @@ data:
 
 # oc apply -f configmap.yaml -n admin-devspaces
 # oc label configmap deep-thought-config controller.devfile.io/mount-to-devworkspace=true controller.devfile.io/watch-configmap=true
+# oc annotate configmap deep-thought-config controller.devfile.io/mount-as=env
