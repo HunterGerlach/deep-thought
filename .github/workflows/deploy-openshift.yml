@@ -1,0 +1,70 @@
+name: Deploy to OpenShift
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - ".github/workflows/**"
+      - "Makefile"
+      - "pyproject.toml"
+      - "poetry.lock"
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: test-non-prod
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to OpenShift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
+          openshift_token: ${{ secrets.OPENSHIFT_API_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+
+      - name: Log in to Red Hat Registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: registry.redhat.io
+          username: ${{ secrets.REDHAT_REGISTRY_USER }}
+          password: ${{ secrets.REDHAT_REGISTRY_PASSWORD }}
+
+      - name: Build Container Image
+        run: |
+          podman build -t ${{ secrets.IMAGE_NAME }}:latest -f k8s/Dockerfile .
+
+      - name: Push Container Image to Registry
+        run: |
+          podman push ${{ secrets.IMAGE_NAME }}:latest
+
+      # - name: Create a New Project
+      #   run: oc new-project ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+
+      - name: Deploy ConfigMap
+        run: oc apply -f ../../deployment/configmap.yaml -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+
+      - name: Deploy Secrets
+        run: |
+          oc apply -f ../../deployment/secrets.yaml -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+          oc apply -f ../../deployment/google-application-credentials.yaml -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+
+      - name: Edit the Service
+        run: |
+          oc patch svc deep-thought --type=json -p '[{"op": "replace", "path": "/spec/ports/0/port", "value":8000}]'
+
+      - name: Update Deployment
+        run: |
+          oc apply -f ../../deployment/deployment.yaml -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+
+      - name: Create a Route
+        run: oc apply -f ../../deployment/route.yaml -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+
+      - name: Verify Deployment
+        run: |
+          oc get pods -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
