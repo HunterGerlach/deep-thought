@@ -3,6 +3,11 @@ apiVersion: v1
 metadata:
   name: deep-thought-config
   #namespace: deep-thought-dev
+  annotations:
+    controller.devfile.io/mount-as: env
+  labels:
+    controller.devfile.io/mount-to-devworkspace: 'true'
+    controller.devfile.io/watch-configmap: 'true'
 data:
   PYTHONPATH: /
   SPENDING_WARNING_PCT: '0.8'
