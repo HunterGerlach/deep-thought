@@ -65,6 +65,9 @@ def handle_exception(exc):
     logger.error("An error occurred: %s", exc)
     return JSONResponse(status_code=500, content={"message": "An internal error occurred"})
 
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
 
 if __name__ == '__main__':
     import uvicorn
