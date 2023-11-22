@@ -229,7 +229,8 @@ async def handle_request_post(request_body: HandleRequestPostBody):
     """
     user_input = request_body.user_input
     bot_response = get_bot_response(user_input)
-    return {"bot_response": bot_response}
+    # return {"bot_response": bot_response}
+    return bot_response
 
 @router.post("/find_sources", responses = {401: {
                                         "description": "PostgreSQL connection failed",
@@ -341,7 +342,7 @@ def synthesize_response(
     bot_response = f"CONFIDENCE: {confidence}\n\n{bot_response}"
     
     logger.debug("Embedding_results: %s", embedding_results)
-    bot_response += f"\n\nSource Score: {embedding_results[0]['score']}"
+    # bot_response += f"\n\nSource Score: {embedding_results[0]['score']}"
     sources_used = [
         # f"<a href=\"{result.get('source_link', '#')}\">{result['source']}</a>"
         # for result in embedding_results
