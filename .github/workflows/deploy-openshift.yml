@@ -16,9 +16,51 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: test-non-prod
+    env:
+      IMAGE_NAME: deep-thought
+      REGISTRY_URI: quay.io
+      OPENSHIFT_PROJECT_NAME: deep-thought-github
 
     steps:
-      - uses: actions/checkout@v2
+      # - name: Checkout repository
+      #   uses: actions/checkout@v2
+
+      # - name: Login to OpenShift
+      #   uses: redhat-actions/oc-login@v1
+      #   with:
+      #     openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
+      #     openshift_token: ${{ secrets.OPENSHIFT_API_TOKEN }}
+      #     insecure_skip_tls_verify: true
+      #     namespace: ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+
+      # - name: Build container image
+      #   uses: redhat-actions/buildah-build@v2
+      #   with:
+      #     image: ${{ env.IMAGE_NAME }}
+      #     tags: latest ${{ github.sha }}
+      #     dockerfiles: |
+      #       ./Dockerfile
+
+      # - name: Push To Quay Registry
+      #   uses: redhat-actions/push-to-registry@v2
+      #   with:
+      #     image: ${{ env.IMAGE_NAME }}
+      #     tags: latest
+      #     registry: quay.io/${{ secrets.QUAY_REPOSITORY }}
+      #     username: ${{ secrets.QUAY_USERNAME }}
+      #     password: ${{ secrets.QUAY_PASSWORD }}
+
+      # - name: Deploy to OpenShift
+      #   run: |
+      #     oc new-app quay.io/${{ secrets.QUAY_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
+      #     oc expose svc/${{ env.IMAGE_NAME }}
+      #     oc rollout status deployment/${{ env.IMAGE_NAME }}
+
+      # - name: Verify Deployment
+      #   run: |
+      #     oc get pods -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Login to OpenShift
         uses: redhat-actions/oc-login@v1
@@ -28,42 +70,8 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: ${{ secrets.OPENSHIFT_PROJECT_NAME }}
 
-      - name: Log in to Red Hat Registry
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: registry.redhat.io
-          username: ${{ secrets.REDHAT_REGISTRY_USER }}
-          password: ${{ secrets.REDHAT_REGISTRY_PASSWORD }}
-
-      - name: Build Container Image
-        run: |
-          podman build -t ${{ secrets.IMAGE_NAME }}:latest -f Dockerfile .
-
-      - name: Push Container Image to Registry
-        run: |
-          podman push ${{ secrets.IMAGE_NAME }}:latest
-
-      # - name: Create a New Project
-      #   run: oc new-project ${{ secrets.OPENSHIFT_PROJECT_NAME }}
-
-      - name: Deploy ConfigMap
-        run: oc apply -f ../../deployment/configmap.yaml -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
-
-      - name: Deploy Secrets
-        run: |
-          oc apply -f ../../deployment/secrets.yaml -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
-          oc apply -f ../../deployment/google-application-credentials.yaml -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
-
-      - name: Edit the Service
-        run: |
-          oc patch svc deep-thought --type=json -p '[{"op": "replace", "path": "/spec/ports/0/port", "value":8000}]'
-
-      - name: Update Deployment
-        run: |
-          oc apply -f ../../deployment/deployment.yaml -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
-
-      - name: Create a Route
-        run: oc apply -f ../../deployment/route.yaml -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+      - name: Trigger OpenShift Build
+        run: oc start-build <build-config-name> --follow --wait
 
       - name: Verify Deployment
         run: |
