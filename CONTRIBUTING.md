@@ -20,6 +20,12 @@ export PYTHONPATH=$(pwd) # add the current directory to the PYTHONPATH
 poetry update # update dependencies
 ```
 
+### How to update poetry.lock file:
+
+```bash
+poetry update --lock # update poetry.lock file
+```
+
 ### Add a new dependency
 
 ```bash

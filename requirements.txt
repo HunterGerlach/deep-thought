@@ -5,12 +5,12 @@ cffi==1.16.0
 charset-normalizer==3.3.2
 cleo==2.1.0
 crashtest==0.4.1
-cryptography==41.0.5
+cryptography==41.0.7
 distlib==0.3.7
 dulwich==0.21.6
 fastjsonschema==2.19.0
 filelock==3.13.1
-idna==3.4
+idna==3.6
 importlib-metadata==6.8.0
 installer==0.7.0
 jaraco.classes==3.3.0
@@ -19,7 +19,7 @@ keyring==24.3.0
 more-itertools==10.1.0
 msgpack==1.0.7
 packaging==23.2
-pexpect==4.8.0
+pexpect==4.9.0
 pkginfo==1.9.6
 platformdirs==3.11.0
 poetry==1.7.1
@@ -35,7 +35,7 @@ SecretStorage==3.3.3
 shellingham==1.5.4
 tomli==2.0.1
 tomlkit==0.12.3
-trove-classifiers==2023.11.14
+trove-classifiers==2023.11.29
 urllib3==2.1.0
 virtualenv==20.24.7
 zipp==3.17.0
