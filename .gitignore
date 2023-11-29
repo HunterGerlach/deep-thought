@@ -4,6 +4,8 @@ debug.log
 spend.log
 .env.config
 .env.secrets
+.env*
+deepthought-dev.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
