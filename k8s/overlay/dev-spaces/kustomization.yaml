@@ -10,10 +10,13 @@ configMapGenerator:
 - name: deep-thought-config
   envs:
   - .env.config
+  behavior: replace
 secretGenerator:
   - name: deep-thought-secrets
     envs:
     - .env.secrets
+    behavior: replace
   - name: google-application-credentials
     files:
     - deepthought-dev.json
+    behavior: replace
