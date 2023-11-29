@@ -9,7 +9,8 @@ run:
 	@poetry run uvicorn src.app:app --reload --host 0.0.0.0 --port 8000
 
 install:
-	poetry install --no-interaction --no-ansi --no-root --verbose
+	poetry config installer.max-workers 10 && \
+	poetry install --no-interaction --no-ansi --no-root -vvv
 
 upgrade-dependencies:
 	./src/scripts/upgrade-dependencies.sh
