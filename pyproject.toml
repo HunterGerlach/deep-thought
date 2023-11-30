@@ -21,7 +21,6 @@ psycopg2-binary = "=2.9.7"
 pgvector = "=0.2.3"
 google-cloud-aiplatform = "=1.33.1"
 pylint = "=2.17.6"
-torch = "=2.1.1"
 
 
 [build-system]
