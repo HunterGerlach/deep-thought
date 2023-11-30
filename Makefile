@@ -10,7 +10,7 @@ run:
 
 install:
 	poetry config installer.max-workers 10 && \
-	poetry install --no-interaction --no-ansi --no-root -vvv
+	poetry install --no-interaction --only main --no-root -vvv
 
 upgrade-dependencies:
 	./src/scripts/upgrade-dependencies.sh
