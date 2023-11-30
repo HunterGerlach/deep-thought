@@ -2,10 +2,6 @@
 .venv_deep-thought/
 debug.log
 spend.log
-.env.config
-.env.secrets
-.env*
-deepthought-dev.json
 .venv*
 
 # Byte-compiled / optimized / DLL files
