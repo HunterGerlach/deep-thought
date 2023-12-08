@@ -1,0 +1,38 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: deep-thought-template
+  annotations:
+    description: "Template for the Deep Thought landing page"
+    tags: "instant-app,deep-thought"
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: deep-thought-service
+  spec:
+    ports:
+    - name: web
+      port: 8080
+      targetPort: 8080
+    selector:
+      app: deep-thought
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: deep-thought-deployment
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: deep-thought
+    template:
+      metadata:
+        labels:
+          app: deep-thought
+      spec:
+        containers:
+        - name: deep-thought-container
+          image: deep-thought-image:latest  # Specify your container image
+          ports:
+          - containerPort: 8080
