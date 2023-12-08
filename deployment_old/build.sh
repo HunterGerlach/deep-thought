@@ -14,8 +14,8 @@ fi
 
 # Install dependencies
 echo "Installing dependencies..."
-poetry install
+#poetry install
 
 # Run application
 echo "Starting Deep Thought..."
-uvicorn $APP_MODULE --host 0.0.0.0 --port 8000
+#uvicorn $APP_MODULE --host 0.0.0.0 --port 8000

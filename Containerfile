@@ -35,7 +35,7 @@ FROM base as final
 
 COPY --from=builder /app/.venv /app/.venv
 COPY src ./src
-COPY entrypoint.sh .
+COPY deployment/entrypoint.sh .
 
 CMD ["./entrypoint.sh"]
 
