@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deep-thought-config
+  # annotations:
+  #   controller.devfile.io/mount-as: env
+  # labels:
+  #   controller.devfile.io/mount-to-devworkspace: 'true'
+  #   controller.devfile.io/watch-configmap: 'true'

@@ -1,0 +1,78 @@
+name: Deploy to OpenShift
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - ".github/workflows/**"
+      - "Makefile"
+      - "pyproject.toml"
+      - "poetry.lock"
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: test-non-prod
+    env:
+      IMAGE_NAME: deep-thought
+      REGISTRY_URI: quay.io
+      OPENSHIFT_PROJECT_NAME: deep-thought-github
+
+    steps:
+      # - name: Checkout repository
+      #   uses: actions/checkout@v2
+
+      # - name: Login to OpenShift
+      #   uses: redhat-actions/oc-login@v1
+      #   with:
+      #     openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
+      #     openshift_token: ${{ secrets.OPENSHIFT_API_TOKEN }}
+      #     insecure_skip_tls_verify: true
+      #     namespace: ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+
+      # - name: Build container image
+      #   uses: redhat-actions/buildah-build@v2
+      #   with:
+      #     image: ${{ env.IMAGE_NAME }}
+      #     tags: latest ${{ github.sha }}
+      #     dockerfiles: |
+      #       ./Dockerfile
+
+      # - name: Push To Quay Registry
+      #   uses: redhat-actions/push-to-registry@v2
+      #   with:
+      #     image: ${{ env.IMAGE_NAME }}
+      #     tags: latest
+      #     registry: quay.io/${{ secrets.QUAY_REPOSITORY }}
+      #     username: ${{ secrets.QUAY_USERNAME }}
+      #     password: ${{ secrets.QUAY_PASSWORD }}
+
+      # - name: Deploy to OpenShift
+      #   run: |
+      #     oc new-app quay.io/${{ secrets.QUAY_REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
+      #     oc expose svc/${{ env.IMAGE_NAME }}
+      #     oc rollout status deployment/${{ env.IMAGE_NAME }}
+
+      # - name: Verify Deployment
+      #   run: |
+      #     oc get pods -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Login to OpenShift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
+          openshift_token: ${{ secrets.OPENSHIFT_API_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ secrets.OPENSHIFT_PROJECT_NAME }}
+
+      - name: Trigger OpenShift Build
+        run: oc start-build <build-config-name> --follow --wait
+
+      - name: Verify Deployment
+        run: |
+          oc get pods -n ${{ secrets.OPENSHIFT_PROJECT_NAME }}
