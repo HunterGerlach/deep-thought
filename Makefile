@@ -1,15 +1,16 @@
 API_VERSIONS = v1 v2
-SERVER_URL = http://127.0.0.1:8000
+SERVER_URL = http://0.0.0.0:8000
 SPEC_PATH = specs
 
 .PHONY: test run test-api test-all $(API_VERSIONS)
 
 run:
 	@echo "Current virtualenv: $(VIRTUAL_ENV)"
-	@uvicorn src.app:app --reload
+	@poetry run uvicorn src.app:app --reload --host 0.0.0.0 --port 8000
 
 install:
-	poetry install
+	poetry config installer.max-workers 10 && \
+	poetry install --no-interaction --only main --no-root -vvv
 
 upgrade-dependencies:
 	./src/scripts/upgrade-dependencies.sh

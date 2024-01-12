@@ -9,7 +9,7 @@ Deep Thought is a question-answering system that uses embeddings and a language 
 
 ## API Details
 
-Information about the API can be found in the [API documentation](API.md).
+Information about the API can be found in the [API documentation](./docs/API.md).
 
 ## Deployment to OpenShift
 
@@ -17,4 +17,4 @@ Information for deploying Deep Thought to OpenShift can be found in the [deploym
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](./docs/CONTRIBUTING.md).

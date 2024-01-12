@@ -8,24 +8,18 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
-fastapi = "^0.103.1"
-langchain = "^0.0.303"
-pytest = "^7.4.2"
-openai = "^0.28.1"
-httpx = "^0.25.0"
-python-dotenv = "^1.0.0"
-termcolor = "^2.3.0"
-uvicorn = "^0.23.2"
-sentence-transformers = "^2.2.2"
-psycopg2-binary = "^2.9.7"
-pgvector = "^0.2.3"
-google-cloud-aiplatform = "^1.33.1"
-torch = [
-    {url = "https://download.pytorch.org/whl/cpu-cxx11-abi/torch-2.0.1%2Bcpu.cxx11.abi-cp39-cp39-linux_x86_64.whl", markers = "python_version=='3.9'"},
-    {url = "https://download.pytorch.org/whl/cpu-cxx11-abi/torch-2.0.1%2Bcpu.cxx11.abi-cp310-cp310-linux_x86_64.whl", markers = "python_version=='3.10'"},
-    {url = "https://download.pytorch.org/whl/cpu-cxx11-abi/torch-2.0.1%2Bcpu.cxx11.abi-cp311-cp311-linux_x86_64.whl", markers = "python_version=='3.11'"}
-]
-pylint = "^2.17.6"
+fastapi = "=0.103.1"
+langchain = "=0.0.303"
+pytest = "=7.4.2"
+openai = "=0.28.1"
+httpx = "=0.25.0"
+python-dotenv = "=1.0.0"
+termcolor = "=2.3.0"
+uvicorn = "=0.23.2"
+psycopg2-binary = "=2.9.7"
+pgvector = "=0.2.3"
+google-cloud-aiplatform = "=1.33.1"
+pylint = "=2.17.6"
 
 
 [build-system]

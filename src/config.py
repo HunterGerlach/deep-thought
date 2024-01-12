@@ -3,8 +3,8 @@
 import os
 from dotenv import load_dotenv
 
-CONFIG_FILE = "src/.env.config"
-SECRETS_FILE = "src/.env.secrets"
+CONFIG_FILE = ".env.config"
+SECRETS_FILE = ".env.secrets"
 
 class Config:
     """Class to manage application configuration and secrets."""
